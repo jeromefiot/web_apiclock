@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello, {% if current_user.is_authenticated() %}{{ current_user.username }}{{ current_user.id }}{% else %}Stranger{% endif %}!</h1>
+</div>
+<div>
+    {{ wtf.quick_form(form) }}
+</div>
+
+<div>
+    <ul class="radio">
+    {% for radio in radios %}
+        <li> 
+            <strong> {{ radio.name }} </strong>
+            // <a href="{{ url_for('alarm.local', radio=radio.url) }}"> Jouer en local </a>
+            // <a href="{{ url_for('alarm.distant', radio=radio.url) }}"> Jouer en distant </a>
+            // <a href="{{ url_for('alarm.index', action='1', radioe=radio.id) }}"> Supprimer </a>
+            // <a href="{{ url_for('alarm.edit', radioedit=radio.id) }}"> Editer </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
