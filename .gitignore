@@ -1,0 +1,11 @@
+# Ignorer fichiers pic, sqlite, cfg
+# et le dossier /static
+*.pyc
+*.sqlite
+*.cfg
+*.txt
+*.geany
+/app/static
+/tmp
+run.py
+config.py
