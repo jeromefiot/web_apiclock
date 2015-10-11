@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+
+{% if shows %}
+    <ul>
+        {% for show in shows %}
+        <li>
+            {{ show[0] }}
+            // <a href="{{ url_for('radio.local', radio=show[1])  }}"> Jouer en local </a>
+            // <a href="{{ url_for('radio.distant', radio=show[1])  }}"> Jouer en distant </a>
+            // <a href="{{ url_for('radio.podcast', action='donwload', urlpodcast=show[1], nompodcast=show[0]) }}"> Télécharger </a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

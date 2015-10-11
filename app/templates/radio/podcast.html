@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}ApiClock - Podcasts{% endblock %}
+
+{% block page_content %}
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Nom</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% if podcasts %}
+			{% for podcast in podcasts %}
+			<tr>
+				<td><img src="{{ podcast.img }}" style="width:100px;height:100px;" /></td>
+				<td>{{ podcast.name }}</td>
+				<td>
+					<a href="{{url_for('radio.podcast', action='unsubscribe', music_id=podcast.id)}}" class="btn btn-danger btn-sm active" role="button">Unsubscribe</a>
+					<a href="{{url_for('radio.podcast', action='show', music_id=podcast.id)}}" class="btn btn-primary btn-sm active" role="button">Emissions</a>
+				</td>
+			</tr>
+			{% endfor %}
+		{% endif %}
+	</tbody
+</table>
+<br/>
+<div>
+	{% for line in test %}
+			{{ line }} <br/>
+	{% endfor %}
+</div>
+
+{% endblock %}

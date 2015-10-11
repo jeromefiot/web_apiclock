@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}ApiClock - Podcasts{% endblock %}
+
+{% block page_content %}
+
+<div class="bs-example add_media">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">AJOUTER UNE ALARME</a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse">
+                <div class="panel-body">
+					{{ wtf.quick_form(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>ALARMES</h2>
+
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Days</th>
+			<th>Frequency</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for alarm in alarms %}
+		<tr>
+			<td>{{ alarm.namealarme }}</td>
+			<td>{{ alarm.days }}</td>
+			<td>{{ alarm.frequence }}</td>
+			<td>
+				<a href="{{alarm.id}}" class="btn btn-default btn-sm active" role="button">Editer</a>
+				<a href="{{alarm.id}}" class="btn btn-danger btn-sm active" role="button">Supprimer</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody
+</table>
+
+
+
+<br/>
+    {% if jours %}
+        {% for jour in jours %}
+            {{jour}}
+        {% endfor %}
+    {% endif %}
+    
+    {% if heures %}
+        {{heures}}
+    {% endif %}
+    
+    {% if minutes %}
+        {{minutes}}
+    {% endif %}    
+<br/>
+    {% if test %}
+        {{test}}
+    {% endif %} 
+	
+<br/><br/>
+{{ zou }} 
+
+{% endblock %}

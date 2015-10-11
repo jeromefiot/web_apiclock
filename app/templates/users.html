@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Apiclock - Users list{% endblock %}
+
+{% block page_content %}
+
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Real name</th>
+        <th>Location</th>
+        <th>About</th>
+        <th>Confirmed</th>
+        <th>Last seen</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.location }}</td>
+                <td>{{ user.about_me }}</td>
+                <td>{{ user.confirmed }}</td>
+                <td>{{ user.last_seen }}</td>
+                <td>
+                    <a class="btn btn-default" href="{{ url_for('.edit_profile_admin', id=user.id) }}" role="button">Edit</a>
+                    <a class="btn btn-danger" href="{{ url_for('.users', id=user.id) }}" role="button">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h3>Dashboard {{ current_user.username }}</h3>
+    
+    <br/><a href="{{ url_for('main.dashboard', action='1', musique='0') }}"> Play </a>
+    <a href="{{ url_for('main.dashboard', action='0', musique='0') }}"> Stop </a><br/>
+    
+    <br/><a href="{{ url_for('main.dashboard', action='2', musique='0') }}">  + Fort </a>
+    <a href="{{ url_for('main.dashboard', action='3', musique='0') }}"> - Fort </a><br/>
+    
+</div>
+
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+
+{% endblock %}
