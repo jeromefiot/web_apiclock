@@ -9,7 +9,7 @@ from mpd import MPDClient
 import os
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin
+from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm
 from .. import db, mail
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
@@ -31,16 +31,25 @@ def jouerMPD():
 #============ PAGES PUBLIQUES ===========
 #========================================
 
-@main.route('/contact')
+@main.route('/contact', methods=['GET', 'POST'])
 def contact():
-    #msg = Message(
-    #    'Hello tarace',
-    #    sender='you@dgoogle.com',
-    #    recipients=['j_fiot@hotmail.com'])
-    #msg.body = "This is the email body"
-    #mail.send(msg)
-    #flash('Sent')
-    return render_template('public/contact.html')
+    form = ContactForm()
+    
+    if request.method == 'POST':
+        if form.validate() == False:
+            flash('All fields are required.')
+            return render_template('public/contact.html', form=form)
+        else:
+            msg = Message(form.subject.data, sender='contact@example.com', recipients=['j_fiot@hotmail.com'])
+            msg.body = """
+            From: %s &lt;%s&gt;
+            %s
+            """ % (form.name.data, form.email.data, form.message.data)
+            mail.send(msg)
+            return render_template('public/contact.html', success=True)
+        
+    elif request.method == 'GET':
+        return render_template('public/contact.html', form=form)
 
 
 @main.route('/user/<username>')

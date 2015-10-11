@@ -1,13 +1,21 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
-    SubmitField, SelectMultipleField, IntegerField
+    SubmitField, SelectMultipleField, IntegerField, TextField
 from wtforms.validators import Required, Length, Email, Regexp, NumberRange
 from wtforms import ValidationError
 from flask.ext.login import login_required, current_user
 from sqlalchemy.sql import and_
 from ..models import Role, User, Music
-
 import feedparser
+
+
+class ContactForm(Form):
+    name = TextField("Name", validators=[Required("Please enter your name.")])
+    email = TextField("Email", validators=[Required("Please enter your email address."),
+                                    Email("Please enter your email address.")])
+    subject = TextField("Subject", validators=[Required("Please enter a subject.")])
+    message = TextAreaField("Message", validators=[Required("Please enter a message.")])
+    submit = SubmitField("Send")
 
 
 class playerForm(Form):
@@ -30,10 +38,6 @@ class playerForm(Form):
             emissions=[(d.entries[i].enclosures[0]['href'],emission.name+' - '+d.entries[i]['title']) for i,j in enumerate(d.entries)]
             lemissions.extend(emissions)
         self.podcast.choices = lemissions
-    
-    
-# faire un formulaire qui propose de jouer tous les medias
-# impose un double menu deroulant (1 choix du type de media 2 populate le 2eme drop down )
 
 
 class addAdmin(Form):
