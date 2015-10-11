@@ -35,5 +35,8 @@ def create_app(config_name):
 
     from .alarm import alarm as alarm_blueprint
     app.register_blueprint(alarm_blueprint, url_prefix='/alarm')
+    
+    from .radio import radio as radio_blueprint
+    app.register_blueprint(radio_blueprint, url_prefix='/radio')
 
     return app

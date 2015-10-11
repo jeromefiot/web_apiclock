@@ -1,151 +1,77 @@
 from flask import render_template, redirect, request, url_for, flash
 from flask.ext.login import login_required, current_user
 from sqlalchemy.sql import and_
-from mpd import MPDClient
-import os.path
+from crontab import CronTab
 import feedparser
+
 from . import alarm
-from .forms import AddMusicForm
+from .forms import addAlarmForm
 from .. import db
-from ..models import User, Music
+from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
 
 #============= FONCTIONS ============
 
-def addcronenvoi(idalarm):
-    newcron=CronTab()
-    job=newcron.new(command='/home/pi/.virtualenvs/apiclock/bin/python /home/pi/apiclock/alarm.py radioreveil', comment='Alarme ID:'+str(idalarm))
-    job.hour.every(2)
+newcron=CronTab()
+
+def addcronenvoi(idalarm,jourscron,heurescron,minutescron,frequence,path):
+    job=newcron.new(command='/home/pi/.virtualenvs/apiclock/bin/python /home/pi/apiclock/mpdplay.py '+path, comment='Alarme ID:'+str(idalarm))
+    job.hour.on(heurescron)
+    job.minute.on(minutescron)
+    job.dow.on(jourscron)
+    #job.hour.during(1,0).every(1)
+    if frequence == '6':
+        job.every_reboot()
+    elif frequence =='dows':
+        job.dow.on(jourscron)
+    elif frequence == 'frequency_per_year':
+        job.frequency_per_year() == 1
+    else:
+        pass
     job.enable()
     newcron.write()
+    
+def getpodcasts():
+    #recup les podcats du user
+    podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
+    listepodcast = []
+    #recup pour chaque podcast les url de ts les emissions
+    for emission in podcasts:
+        d = feedparser.parse(emission.url)
+        emissions=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
+        listepodcast.append(emissions)
+    return listepodcast
 
-def jouerMPD(path):
-    """   """
-    client = MPDClient()               # create client object
-    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
-    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
-    client.connect("localhost", 6600)  # connect to localhost:6600
-    client.add(path)
-    client.play()
-    #client.close()                     # send the close command
-    #client.disconnect()                # disconnect from the server
+#==============
 
-#====================================
-
-@alarm.route('/', methods=['GET', 'POST'], defaults = {'action':0, 'radioe':0})
-@alarm.route('/<int:action>/<int:radioe>', methods=['GET', 'POST'])
+@alarm.route('/', methods=['GET', 'POST'])
 @login_required
-def index(action, radioe):
-    radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
-    form = AddMusicForm()
+@admin_required
+def index():    
+    alarms = Alarm.query.filter(Alarm.users==current_user.id).all()
+    radios = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
+    form = addAlarmForm()
 
-    if form.validate_on_submit() and form.music_type.data=='1':
-        # if Radio type added insert radio in bdd
-        radio = Music(name=form.name.data,
-                      url=form.url.data,
-                      description=form.description.data,
-                      music_type=form.music_type.data,
-                      users=current_user.id)
-        db.session.add(radio)
-        db.session.commit()
-        flash('Radio has been added.')
-        return redirect(url_for('.index'))
-    
-    elif form.validate_on_submit() and form.music_type.data=='2':
-        # if Feed (podcast) added then redirect to linked shows
-        url=form.url.data
-        d = feedparser.parse(url)
-        #podcast = d['feed']["image"]["url"]
-        #podcast = Podcast(titre=d['feed']["subtitle"],
-        #                  lien=d['feed']["link"],
-        #                  img=d['feed']["url"]
-        #                 )
-        podcast = Music(name=form.name.data,
-                      url=form.url.data,
-                      img=d['feed']["image"]["url"],
-                      description=form.description.data,
-                      music_type=form.music_type.data,
-                      users=current_user.id)
-        db.session.add(podcast)
-        db.session.commit()
-        
-        flash('Podcast ok')
-        return render_template('alarm/shows.html', podcast=form.name.data)
-    
-    elif action is 1 and radioe is not 0 :
-        """ action = 1 > SUPPRESSION de la radio ayant l'id radio passe par le param radioe """
-        radiodel = Music.query.filter(Music.id==radioe).first()
-        db.session.delete(radiodel)
-        db.session.commit()
-        flash('Radio has been deleted')
-        return redirect(url_for('.index'))
-
-    return render_template('alarm/radio.html', form=form, radios=radio)
-
-
-@alarm.route('/edit/<int:radioedit>', methods=['GET', 'POST'])
-@login_required
-def edit(radioedit):
-    radioe = Music.query.filter(Music.id==radioedit).first()
-    radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
-    form = AddMusicForm()
-    
     if form.validate_on_submit():
-        radioe.name=form.name.data
-        radioe.url=form.url.data
-        radioe.description=form.description.data
-        db.session.add(radioe)
-        flash('Radio has been updated')
+        namecron = form.name.data
+        recupjours = dict((key, request.form.getlist(key)) for key in request.form.keys())
+        jourscron = ', '.join(recupjours['jours'])
+        heurescron = form.heures.data
+        minutescron = form.minutes.data
+        frequencecron = form.frequence.data
+        # result de la requete et recup le champ URL
+        path = form.Radio.data.url
         
-    form.name.data=radioe.name
-    form.url.data=radioe.url
-    form.description.data=radioe.description
-    return render_template('alarm/radio.html', form=form, radios=radio)
-
-
-@alarm.route('/podcast/', methods=['GET', 'POST'], defaults = {'action':'rien'})
-@alarm.route('/podcast/<action>', methods=['GET', 'POST'])
-@login_required
-def podcast(action):
-    """ Display podcasts subscription list for current user"""
-    if action == 'rien':
-        podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-        test = 'rien'
-        
-    elif action == "unsubscribe":
-        idmusic = request.args.get('music_id')
-        podcast = Music.query.filter(Music.id==idmusic).first()
-        db.session.delete(podcast)
+        alarme = Alarm(namealarme=namecron,
+                      days=jourscron,
+                      startdate=str(heurescron)+':'+str(minutescron),
+                      frequence=frequencecron,
+                      users=current_user.id)
+        db.session.add(alarme)
         db.session.commit()
-        flash('Podcast has been deleted')
-        return redirect(url_for('.podcast'))
-                        
-    elif action == "show":
-        idmusic = request.args.get('music_id')
-        podcast = Music.query.filter(Music.id==idmusic).first()
-        d = feedparser.parse(podcast.url)
-        shows=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
-        return render_template('alarm/shows.html', shows=shows)
+
+        # setting up crontab
+        addcronenvoi(alarme.id,jourscron,heurescron,minutescron,frequencecron,path)
+        flash('Your alarm has been programed.')
         
-    return render_template('alarm/podcast.html', podcasts=podcasts, test=test)
-
-
-@alarm.route('/local/<path:radio>')
-@login_required
-def local(radio):
-    return render_template('alarm/player.html', music=radio)
-
-
-@alarm.route('/distant/<path:radio>')
-@login_required
-def distant(radio):
-    
-    if radio == 'stop':
-        client = MPDClient() 
-        client.connect("localhost", 6600)
-        client.clear()
-        client.stop()
-        return redirect(url_for('.index'))
-        
-    jouerMPD(radio)
-    return render_template('alarm/distant.html')
+    return render_template("alarm/alarm.html", form=form, user=current_user, alarms=alarms, radios=radios)

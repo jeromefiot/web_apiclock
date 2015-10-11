@@ -20,43 +20,71 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">Flasky</a>
+            
+<!--      AFFICHAGE PUBLIC          -->
+
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">APIClock</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('main.index') }}">Home</a></li>
-                {% if current_user.is_authenticated() %}
-                <li><a href="{{ url_for('main.alarm') }}">Alarme</a></li>
-                <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
+                {% if not current_user.is_authenticated() %}
+                    <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                {% endif %}
+            
+<!--      SEMI PRIVATE          -->
+            
+                {% if current_user.is_authenticated() and not current_user.is_administrator() %}
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                </ul> 
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="{{ current_user.gravatar(size=18) }}">
+                            Account <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
+                            <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+                            <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
+                            <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
+                
+<!--      ADMIN          -->
+
+                {% if current_user.is_administrator() %}
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('alarm.index') }}">Alarme</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Content <b class="caret"></b>
+                        Radio <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('alarm.index') }}">Flux</a></li>
-                        <li><a href="{{ url_for('alarm.podcast', action='rien') }}">Podcasts</a></li>
+                        <li><a href="{{ url_for('radio.index') }}">Radios</a></li>
+                        <li><a href="{{ url_for('radio.podcast', action='rien') }}">Podcasts</a></li>
                     </ul>
                 </li>
-                    {% if current_user.email == 'doudettecorp@gmail.com' %}
-                        <li><a href="{{ url_for('main.admin_stuff') }}">Admin</a></li>
-                    {% endif %}
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                {% if current_user.is_authenticated() %}
+                {% if current_user.is_administrator() %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{ current_user.gravatar(size=18) }}">
                         Account <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
                         <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
                         <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                        <li><a href="{{ url_for('main.admin_stuff') }}">Reminder</a></li>
+                        <li><a href="{{ url_for('main.users') }}">Users</a></li>
                     </ul>
                 </li>
-                {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
                 {% endif %}
             </ul>
         </div>

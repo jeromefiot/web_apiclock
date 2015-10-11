@@ -6,6 +6,9 @@ from flask import current_app, request
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import db, login_manager
 
+from flask.ext.login import login_required, current_user
+from sqlalchemy.sql import and_
+
 
 class Permission:
     FOLLOW = 0x01
@@ -21,7 +24,7 @@ class Alarm(db.Model):
     __tablename__ = 'alarm'
     id = db.Column(db.Integer, primary_key=True)
     namealarme = db.Column(db.String(120))
-    startdate = db.Column(db.DateTime)
+    startdate = db.Column(db.String(64))
     duration = db.Column(db.String(140))
     frequence = db.Column(db.String(140))
     days = db.Column(db.String(140))
@@ -198,6 +201,9 @@ class AnonymousUser(AnonymousUserMixin):
 
 login_manager.anonymous_user = AnonymousUser
 
+def getradios():
+    radios = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id))
+    return radios
 
 @login_manager.user_loader
 def load_user(user_id):

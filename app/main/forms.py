@@ -3,19 +3,42 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField, SelectMultipleField, IntegerField
 from wtforms.validators import Required, Length, Email, Regexp, NumberRange
 from wtforms import ValidationError
-from ..models import Role, User
+from flask.ext.login import login_required, current_user
+from sqlalchemy.sql import and_
+from ..models import Role, User, Music
+
+import feedparser
 
 
-class NameForm(Form):
-    name = StringField('What is your name?', validators=[Required()])
-    submit = SubmitField('Submit')
+class playerForm(Form):
+    radio = SelectField('Radio')
+    podcast = SelectField('Podcast')
+    music = SelectField('Music')
+    submit = SubmitField('Jouer')
+
+    def __init__(self, *args, **kwargs):
+        super(playerForm, self).__init__(*args, **kwargs)
+        self.radio.choices = [(g.id, g.name) for g in
+            Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()]
+        self.music.choices = [(g.id, g.name) for g in
+            Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
+        podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
+        lemissions = []
+        #recup pour chaque podcast les url de ts les emissions
+        for emission in podcasts:
+            d = feedparser.parse(emission.url)
+            emissions=[(d.entries[i].enclosures[0]['href'],emission.name+' - '+d.entries[i]['title']) for i,j in enumerate(d.entries)]
+            lemissions.extend(emissions)
+        self.podcast.choices = lemissions
+    
+    
+# faire un formulaire qui propose de jouer tous les medias
+# impose un double menu deroulant (1 choix du type de media 2 populate le 2eme drop down )
 
 
-class addAlarmForm(Form):
-    jours = SelectMultipleField('jours', choices=[('0','Lundi'),('1','Mardi'),('2','Mercredi'),('3','Jeudi'),('4','Vendredi')
-        ,('5','Samedi'),('6','Dimanche')])
-    heures = IntegerField('Heures', validators=[NumberRange(min=0, max=23)])
-    minutes = IntegerField('Minutes', validators=[NumberRange(min=0, max=59)])
+class addAdmin(Form):
+    """ add line to admin relinder list """
+    about_me = TextAreaField('Ajouter')
     submit = SubmitField('valider')
 
 

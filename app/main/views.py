@@ -1,22 +1,46 @@
+# coding: utf-8
+
 from flask import render_template, redirect, url_for, abort, flash, request
 from flask.ext.login import login_required, current_user
+from flask.ext.mail import Mail, Message
+from sqlalchemy.sql import and_
 from crontab import CronTab
+from mpd import MPDClient
+import os
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, addAlarmForm
-from .. import db
-from ..models import Role, User
+from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin
+from .. import db, mail
+from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
 
 
-@main.route('/')
-def index():
-    return render_template('index.html')
+#============= FONCTIONS ============
 
+def jouerMPD():
+    """   """
+    client = MPDClient()               # create client object
+    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
+    client.connect("localhost", 6600)  # connect to localhost:6600
+    #client.add(path)
+    #client.play()
+    #client.close()                     # send the close command
+    #client.disconnect()                # disconnect from the server
+#========================================
+#============ PAGES PUBLIQUES ===========
+#========================================
 
-@main.route('/admin_stuff')
-def admin_stuff():
-    return render_template('admin_stuff.html')
+@main.route('/contact')
+def contact():
+    #msg = Message(
+    #    'Hello tarace',
+    #    sender='you@dgoogle.com',
+    #    recipients=['j_fiot@hotmail.com'])
+    #msg.body = "This is the email body"
+    #mail.send(msg)
+    #flash('Sent')
+    return render_template('public/contact.html')
 
 
 @main.route('/user/<username>')
@@ -25,34 +49,63 @@ def user(username):
     return render_template('user.html', user=user)
 
 
-@main.route('/alarm', methods=['GET', 'POST'])
+#========================================
+#=========== PAGES SEMI PRIVEES =========
+#========================================
+
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    client = MPDClient()               # create client object
+    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
+    client.connect("localhost", 6600)
+    
+    if 'play' in request.form:
+        # connect to localhost:6600
+        client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
+        client.play()
+    elif 'stop' in request.form:
+        client.stop()
+        client.close()
+    return render_template('index.html')
+
+
+#========================================
+#============= PAGES PRIVEES ============
+#========================================
+
+@main.route('/dashboard', methods=['GET', 'POST'], defaults = {'action':3})
+@main.route('/dashboard/<action>', methods=['GET', 'POST'])
 @login_required
-def alarm():
-    form = addAlarmForm()
-    jourscron = ''
-    heurescron = ''
-    minutescron = ''
-    test = ''
+@admin_required
+def dashboard(action):
+    
+    client = MPDClient()
+    client.connect("localhost", 6600)
 
-    if form.validate_on_submit():
-        recupjours = dict((key, request.form.getlist(key)) for key in request.form.keys())
-        jourscron = ", ".join(recupjours['jours'])
-        heurescron = form.heures.data
-        minutescron = form.minutes.data
-        
-        # setting up crontab
-        cron = CronTab()
-        job = cron.new(command='/home/pi/apiclock/test_cron.py',
-                       comment='alarme_radio' + ' : ' + current_user.username)
-        job.dow.on(jourscron)
-        job.hour.on(heurescron)
-        job.minute.on(minutescron)
-        job.enable()
-        cron.write()
-        
-    return render_template("alarm.html", form=form, user=current_user, jours=jourscron, heures=heurescron,
-                           minutes=minutescron)
-
+    form = playerForm()
+    
+    # result de la requete et recup le champ URL
+    #    path = form.Radio.data.url
+    
+    if action == '1':
+        client.clear()
+        client.add(musiq.url)
+        client.play()
+        return redirect(url_for('.dashboard'))
+    elif action == '0':
+        client.clear()
+        client.stop()
+        client.close()
+        return redirect(url_for('.dashboard'))
+    elif action == '2':
+        os.system('amixer sset PCM,0 3dB+')
+        return redirect(url_for('.dashboard'))
+    elif action == '3':
+        os.system('amixer sset PCM,0 3dB-')
+        return redirect(url_for('.dashboard'))
+    else :
+        return render_template('dashboard.html', form=form)
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -96,3 +149,36 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+@main.route('/users', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def users():
+    user = User.query.all()
+    if request.args.get('id'):
+        print 'yes'
+        userid = request.args.get('id')
+        print userid
+        userd = User.query.filter(User.id==userid).first()
+        db.session.delete(userd)
+        db.session.commit()
+        flash('The user has been deleted.')
+        return redirect(url_for('.users', users=user))
+    return render_template('users.html', users=user)
+
+
+@main.route('/admin_stuff', methods=['GET', 'POST'])
+@main.route('/admin_stuff/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_stuff():
+    form = addAdmin()
+    with open('/home/pi/apiclock/admin.txt', 'a+') as f:
+        if form.validate_on_submit():
+            ajout = form.about_me.data
+            f.write(ajout+'\n')
+            return redirect(url_for('.admin_stuff'))
+        data = f.readlines()
+
+    return render_template('admin_stuff.html', form=form, data=data)
