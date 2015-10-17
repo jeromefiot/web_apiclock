@@ -8,46 +8,15 @@ from . import alarm
 from .forms import addAlarmForm
 from .. import db
 from ..models import Role, User, Alarm, Music
+from ..functions import addcronenvoi, removecron
 from ..decorators import admin_required
 
-#============= FONCTIONS ============
 
-newcron=CronTab()
-
-def addcronenvoi(idalarm,jourscron,heurescron,minutescron,frequence,path):
-    job=newcron.new(command='/home/pi/.virtualenvs/apiclock/bin/python /home/pi/apiclock/mpdplay.py '+path, comment='Alarme ID:'+str(idalarm))
-    job.hour.on(heurescron)
-    job.minute.on(minutescron)
-    job.dow.on(jourscron)
-    #job.hour.during(1,0).every(1)
-    if frequence == '6':
-        job.every_reboot()
-    elif frequence =='dows':
-        job.dow.on(jourscron)
-    elif frequence == 'frequency_per_year':
-        job.frequency_per_year() == 1
-    else:
-        pass
-    job.enable()
-    newcron.write()
-    
-def getpodcasts():
-    #recup les podcats du user
-    podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-    listepodcast = []
-    #recup pour chaque podcast les url de ts les emissions
-    for emission in podcasts:
-        d = feedparser.parse(emission.url)
-        emissions=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
-        listepodcast.append(emissions)
-    return listepodcast
-
-#==============
-
-@alarm.route('/', methods=['GET', 'POST'])
+@alarm.route('/', methods=['GET', 'POST'], defaults = {'action':'0', 'idr':'N'})
+@alarm.route('/<action>/<idr>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def index():    
+def index(action, idr):
     alarms = Alarm.query.filter(Alarm.users==current_user.id).all()
     radios = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
     form = addAlarmForm()
@@ -73,5 +42,22 @@ def index():
         # setting up crontab
         addcronenvoi(alarme.id,jourscron,heurescron,minutescron,frequencecron,path)
         flash('Your alarm has been programed.')
+        print jourscron
+        return redirect(url_for('.index'))
         
-    return render_template("alarm/alarm.html", form=form, user=current_user, alarms=alarms, radios=radios)
+    elif action == '1':
+    # action = 1 = supprimer l'alarme de l'id passe en arg
+        alarmedel = Alarm.query.filter(Alarm.id==idr).first()
+        db.session.delete(alarmedel)
+        removecron(idr)
+        db.session.commit()
+        flash('Alarm has been deleted')
+        return redirect(url_for('.index'))
+    
+    elif action == '2':
+    # retourne la page en edition avec l'alarme de l'id recu
+        alarmeedit = Alarm.query.filter(Alarm.id==idr).first()
+        print alarmeedit
+        form = addAlarmForm(obj=alarmeedit)
+    else:
+        return render_template("alarm/alarm.html", form=form, user=current_user, alarms=alarms, radios=radios)

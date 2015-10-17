@@ -16,7 +16,22 @@
 </div>
 
 <div class="col-md-4">
+    <h2>PLAY</h2>
     {{ wtf.quick_form(form) }}
 </div>
+
+<div class="col-md-4">
+    <h2>SNOOZE</h2>
+    {{ wtf.quick_form(formsnooze) }}
+</div>
+
+<div class="col-md-4">
+    <form method="POST" action="/">
+        {{ form.csrf_token }}
+        {{ form.radio.label }} {{ form.radio }}
+        <input type="submit" value="Go">
+    </form>
+</div>
+
 
 {% endblock %}

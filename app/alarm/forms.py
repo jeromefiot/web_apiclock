@@ -18,7 +18,8 @@ class addAlarmForm(Form):
     minutes = IntegerField('Minutes', validators=[NumberRange(min=0, max=59)])
     #duration = StringField('Duration in Minutes', validators=[Length(5, 5)])
     frequence = SelectField('Frequence', choices=[('0','One shot'),
+                                                ('days','Jours'),
                                                 ('dows','Semaine'),
                                                 ('frequency_per_year','An'),
-                                                ('6','Reboot')])
+                                                ('reboot','Reboot')])
     submit = SubmitField('valider')

@@ -9,6 +9,21 @@ from ..models import Role, User, Music
 import feedparser
 
 
+class snoozeForm(Form):
+    radiosnooze = SelectField('Radio')
+    minutessnooze = SelectField('Duree')
+    submitsnooze = SubmitField("Snooze")
+    
+    def __init__(self, *args, **kwargs):
+        super(snoozeForm, self).__init__(*args, **kwargs)
+        """defini les choix pour radio / important = passer en str l id"""
+        self.radiosnooze.choices = [(str(g.id), g.name) for g in
+            Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()]
+        """defini une liste de 1 a 60 en str()"""
+        dureesnooze = list(range(1,60))
+        self.minutessnooze.choices = [(str(g),str(g)) for g in dureesnooze]
+
+
 class ContactForm(Form):
     name = TextField("Name", validators=[Required("Please enter your name.")])
     email = TextField("Email", validators=[Required("Please enter your email address."),
@@ -19,6 +34,7 @@ class ContactForm(Form):
 
 
 class playerForm(Form):
+    media = SelectField('Media', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
     radio = SelectField('Radio')
     podcast = SelectField('Podcast')
     music = SelectField('Music')

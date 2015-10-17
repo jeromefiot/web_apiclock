@@ -15,7 +15,7 @@
             </div>
             <div id="collapseThree" class="panel-collapse collapse">
                 <div class="panel-body">
-					{{ wtf.quick_form(form) }}
+		    {{ wtf.quick_form(form) }}
                 </div>
             </div>
         </div>
@@ -40,8 +40,10 @@
 			<td>{{ alarm.days }}</td>
 			<td>{{ alarm.frequence }}</td>
 			<td>
-				<a href="{{alarm.id}}" class="btn btn-default btn-sm active" role="button">Editer</a>
-				<a href="{{alarm.id}}" class="btn btn-danger btn-sm active" role="button">Supprimer</a>
+                                <a href="{{url_for('alarm.index', action='2', idr=alarm.id)}}" class="btn btn-default btn-sm active"
+                                   role="button">Editer</a>
+                                <a href="{{url_for('alarm.index', action='1', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
+                                   role="button">Supprimer</a>
 			</td>
 		</tr>
 		{% endfor %}
@@ -49,27 +51,9 @@
 </table>
 
 
-
 <br/>
-    {% if jours %}
-        {% for jour in jours %}
-            {{jour}}
-        {% endfor %}
-    {% endif %}
-    
-    {% if heures %}
-        {{heures}}
-    {% endif %}
-    
-    {% if minutes %}
-        {{minutes}}
-    {% endif %}    
-<br/>
-    {% if test %}
-        {{test}}
-    {% endif %} 
-	
-<br/><br/>
-{{ zou }} 
+{% if test %}
+	{{test}}
+{% endif %}
 
 {% endblock %}

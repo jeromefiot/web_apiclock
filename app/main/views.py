@@ -6,27 +6,17 @@ from flask.ext.mail import Mail, Message
 from sqlalchemy.sql import and_
 from crontab import CronTab
 from mpd import MPDClient
+from threading import Thread
 import os
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm
+from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm,\
+    snoozeForm
 from .. import db, mail
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
+from ..functions import jouerMPD, snooze
 
-
-#============= FONCTIONS ============
-
-def jouerMPD():
-    """   """
-    client = MPDClient()               # create client object
-    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
-    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
-    client.connect("localhost", 6600)  # connect to localhost:6600
-    #client.add(path)
-    #client.play()
-    #client.close()                     # send the close command
-    #client.disconnect()                # disconnect from the server
 #========================================
 #============ PAGES PUBLIQUES ===========
 #========================================
@@ -83,7 +73,7 @@ def index():
 #============= PAGES PRIVEES ============
 #========================================
 
-@main.route('/dashboard', methods=['GET', 'POST'], defaults = {'action':3})
+@main.route('/dashboard', methods=['GET', 'POST'], defaults = {'action':4})
 @main.route('/dashboard/<action>', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -93,13 +83,21 @@ def dashboard(action):
     client.connect("localhost", 6600)
 
     form = playerForm()
+    formsnooze = snoozeForm()
     
-    # result de la requete et recup le champ URL
-    #    path = form.Radio.data.url
+    if formsnooze.validate_on_submit():
+        """recup radio par id et retourne url a jouerMPD()"""
+        radiosnooze = formsnooze.radiosnooze.data
+        radiosnooze = Music.query.filter(Music.id==radiosnooze).first()
+        radiosnooze = radiosnooze.url
+        minutessnooze = float(formsnooze.minutessnooze.data)
+        snooze(radiosnooze, minutessnooze)
+        return redirect(url_for('.dashboard'))
     
-    if action == '1':
+    # recup du param en GET = action
+    elif action == '1':
         client.clear()
-        client.add(musiq.url)
+        client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
         client.play()
         return redirect(url_for('.dashboard'))
     elif action == '0':
@@ -108,13 +106,15 @@ def dashboard(action):
         client.close()
         return redirect(url_for('.dashboard'))
     elif action == '2':
+        """Augmente le son"""
         os.system('amixer sset PCM,0 3dB+')
         return redirect(url_for('.dashboard'))
     elif action == '3':
+        """Diminue le son"""
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :
-        return render_template('dashboard.html', form=form)
+        return render_template('dashboard.html', form=form, formsnooze=formsnooze)
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
