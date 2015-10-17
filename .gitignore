@@ -3,7 +3,7 @@
 *.pyc
 *.sqlite
 *.cfg
-*.txt
+admin.txt
 *.geany
 /app/static
 /tmp
