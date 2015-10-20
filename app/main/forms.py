@@ -34,10 +34,10 @@ class ContactForm(Form):
 
 
 class playerForm(Form):
-    media = SelectField('Media', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
-    radio = SelectField('Radio')
-    podcast = SelectField('Podcast')
-    music = SelectField('Music')
+    media = SelectField('', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
+    radio = SelectField('')
+    podcast = SelectField('')
+    music = SelectField('')
     submit = SubmitField('Jouer')
 
     def __init__(self, *args, **kwargs):

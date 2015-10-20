@@ -3,55 +3,52 @@
 
 {% block title %}Flasky{% endblock %}
 {% block page_content %}
-
-<div class="bs-example add_media">
-    <div class="panel-group" id="accordion">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">AJOUTER UN MEDIA</a>
-                </h4>
-            </div>
-            <div id="collapseThree" class="panel-collapse collapse">
-                <div class="panel-body">
-					{{ wtf.quick_form(form) }}
+    <div class="bs-example add_media">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">AJOUTER UN MEDIA</a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        {{ wtf.quick_form(form) }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<div style="margin-top:40px;">
-	<a href="{{ url_for('radio.index', action='2', radioe='1') }}" class="btn btn-primary btn-lg active" role="button">Play</a>
-	<a href="{{ url_for('radio.index', action='3', radioe='1') }}" class="btn btn-default btn-lg active" role="button">Stop</a>
-</div>
-
-<h2> Mes Radios </h2>
-<div>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Nom</th>
-				<th>Jouer</th>
-				<th>Action</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for radio in radios %}
-			<tr>
-				<td>{{ radio.name }}</td>
-				<td>
-					<a href="{{url_for('radio.local', radio=radio.url)}}" class="btn btn-default btn-sm active" role="button">Local</a>
-					<a href="{{url_for('radio.distant', radio=radio.url)}}" class="btn btn-primary btn-sm active" role="button">Distant</a>
-				</td>
-				<td>
-					<a href="{{url_for('radio.edit', radioedit=radio.id)}}" class="btn btn-default btn-sm active" role="button">Editer</a>
-					<a href="{{url_for('radio.index', action='1', radioe=radio.id)}}" class="btn btn-danger btn-sm active" role="button">Supprimer</a>
-				</td>
-			</tr>
-			{% endfor %}
-		</tbody
-	</table>
-</div>
-
+    <div style="margin-top:40px;">
+        <a href="{{ url_for('radio.index', action='2', radioe='1') }}" class="btn btn-primary btn-lg active" role="button">Play</a>
+        <a href="{{ url_for('radio.index', action='3', radioe='1') }}" class="btn btn-default btn-lg active" role="button">Stop</a>
+    </div>
+    <h2> Mes Radios </h2>
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Jouer</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for radio in radios %}
+                <tr>
+                    <td>{{ radio.name }}</td>
+                    <td>
+                        <a href="{{url_for('radio.local', radio=radio.url)}}" class="btn btn-default btn-sm active" role="button">Local</a>
+                        <a href="{{url_for('radio.distant', radio=radio.url)}}" class="btn btn-primary btn-sm active" role="button">Distant</a>
+                    </td>
+                    <td>
+                        <a href="{{url_for('radio.edit', radioedit=radio.id)}}" class="btn btn-default btn-sm active" role="button">Editer</a>
+                        <a href="{{url_for('radio.index', action='1', radioe=radio.id)}}"
+                           class="btn btn-danger btn-sm active" role="button">Supprimer </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody
+        </table>
+    </div>
 {% endblock %}

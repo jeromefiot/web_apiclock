@@ -2,12 +2,70 @@
 
 {% block title %}Apiclock{% endblock %}
 
+<head>
 {% block head %}
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <script type="text/javascript" src="{{ url_for('static', filename='js/date_heure.js') }}"></script>
+
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+<script language="javascript">//<![CDATA[
+    $(document).ready(function() {
+        $("#radios").show();
+        $("#podcasts").hide();
+        $("#musics").hide();
+        $("#form1-radio").hide();
+        $("#form1-podcast").hide();
+        $("#form1-music").hide();
+        
+        $("#media").change(function() {
+            if ($("#media").val() == "1"){
+                $("#radios").show();
+                $("#podcasts").hide();
+                $("#musics").hide();
+            } else if ($("#media").val() == "2") {
+               $("#radios").hide();
+               $("#podcasts").show();
+               $("#musics").hide();
+            } else if ($("#media").val() == "3") {
+               $("#radios").hide();
+               $("#podcasts").hide();
+               $("#musics").show();
+            } else {
+               $("#radios").hide();
+               $("#podcasts").hide();
+               $("#musics").hide();
+            }
+        });
+        $("#form1-media").change(function() {
+            if ($("#form1-media").val() == "1"){
+                $("#form1-radio").show();
+                $("#form1-podcast").hide();
+                $("#form1-music").hide();
+            } else if ($("#form1-media").val() == "2") {
+               $("#form1-radio").hide();
+               $("#form1-podcast").show();
+               $("#form1-music").hide();
+            } else if ($("#form1-media").val() == "3") {
+               $("#form1-radio").hide();
+               $("#form1-podcast").hide();
+               $("#form1-music").show();
+            } else {
+               $("#form1-radio").hide();
+               $("#form1-podcast").hide();
+               $("#form1-music").hide();
+            }
+        });
+    });
+    //]]>
+</script>
+
+
 {% endblock %}
 
 {% block navbar %}
@@ -28,8 +86,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 {% if not current_user.is_authenticated() %}
-                    <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                    <li><a href="#">Concept</a></li>
                     <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                    <li ><a href="{{ url_for('auth.login') }}">Log In</a></li>
+            </ul>
                 {% endif %}
             
 <!--      SEMI PRIVATE          -->
@@ -92,20 +154,26 @@
 </div>
 {% endblock %}
 
-{% block content %}
-<div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
 
-    {% block page_content %}{% endblock %}
-</div>
+{% block content %}
+    <div class="container">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}  
+        {% block page_content %}{% endblock %}
+    </div>
 {% endblock %}
 
+<div id="footer">
+    {% block footer %}
+        {% include '_footer.html' %}
+    {% endblock %}
+</div>
+
 {% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
+    {{ super() }}
+    {{ moment.include_moment() }}
 {% endblock %}

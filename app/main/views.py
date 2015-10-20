@@ -42,11 +42,16 @@ def contact():
         return render_template('public/contact.html', form=form)
 
 
+@main.route('/apiclock')
+def apiclock():
+    
+    return render_template('index.html')
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
-
 
 #========================================
 #=========== PAGES SEMI PRIVEES =========
@@ -68,7 +73,6 @@ def index():
         client.close()
     return render_template('index.html')
 
-
 #========================================
 #============= PAGES PRIVEES ============
 #========================================
@@ -82,16 +86,22 @@ def dashboard(action):
     client = MPDClient()
     client.connect("localhost", 6600)
 
-    form = playerForm()
+    form1 = playerForm(prefix="form1")
     formsnooze = snoozeForm()
     
-    if formsnooze.validate_on_submit():
+    if formsnooze.validate_on_submit() and formsnooze.submitsnooze.data:
         """recup radio par id et retourne url a jouerMPD()"""
         radiosnooze = formsnooze.radiosnooze.data
         radiosnooze = Music.query.filter(Music.id==radiosnooze).first()
         radiosnooze = radiosnooze.url
         minutessnooze = float(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
+        return redirect(url_for('.dashboard'))
+    
+    elif form1.validate_on_submit() and form1.form1-submit.data and request.form['form1-submit'] == 'Jouer':
+        """suivant le type de media recup id de celui ci puis requete pour url"""
+        radio = form1.form1-radio.data
+        flash ('zarma')
         return redirect(url_for('.dashboard'))
     
     # recup du param en GET = action
@@ -114,7 +124,8 @@ def dashboard(action):
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :
-        return render_template('dashboard.html', form=form, formsnooze=formsnooze)
+        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze)
+
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -189,5 +200,6 @@ def admin_stuff():
             f.write(ajout+'\n')
             return redirect(url_for('.admin_stuff'))
         data = f.readlines()
+        data = [str(i)+'/'+str(val) for i, val in enumerate(data)]
 
     return render_template('admin_stuff.html', form=form, data=data)

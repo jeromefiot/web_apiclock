@@ -2,7 +2,7 @@
 {% block title %}Apiclock{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
+<div class="page-header" style="padding-bottom: -10px;">
     {% if current_user.is_authenticated() %}
 
     <h2>How to set up your APICLOCK</h2>
@@ -12,7 +12,7 @@
     
     <ul>
         <li><a href="#requirements">Requirements</a></li>
-        <li><a href="#environement">Environement</a></li>
+        <li><a href="#environement">Environment</a></li>
         <li><a href="#installation">Installation</a></li>
     </ul>
     </div>
@@ -41,20 +41,18 @@
             $ sudo apt-get update
         </p>
     </div>
-   <br/><br/>
     Next, upgrade all your installed packages to their latest versions with the command:<br/>
     <div class="alert alert-success">
         <p>
             $ sudo apt-get upgrade
         </p>
     </div>
-    <br/>
     
     <hr>
     <div id="environement"></div>
-    <h3>2. ENVIRONEMENT</h3>
+    <h3>2. ENVIRONMENT</h3>
     <br/>
-    <h4>Install Git, Virutualenv & VirtualenvWrapper</h4>
+    <h4>Install Git, Virtualenv & VirtualenvWrapper</h4>
     <br/>
     Because it's a good thing to :
     <ul>
@@ -64,7 +62,6 @@
         (VirtualenvWrapper gives you an easier way to manipulate virtualenv.)
         </li>
      </ul>
-    <br/>
     <div class="alert alert-success">
         <p>
             # install Git<br/>
@@ -84,7 +81,6 @@
             $ exit<br/>
         </p>
     </div>
-    
     <br/>
     <h4>Create a vitualenv</h4>
     <br/>
@@ -121,35 +117,38 @@
         </p>
     </div>
     <br/>
-    <br/>
     <h4>Install needed modules / packages</h4>
     <br/>
     By default Python is installed on Raspberry pi but you need more packages. all these packages are available in the directory 'apiclock' you just cloned in the <b>'requirements.txt'</b>.<br/>
     Some packages (like 'Flask-Migrate' for example) are only useful on a developmenent context and if you don't want to dive in the code you could delete it.<br/>
     <br/>
     To install all these modules :<br/><br/>
-    <ol>
-        <li>If not, activate the virtualenv : <div class="alert alert-success">$ workon apiclock</div></li>
-        <li>Move to the apiclock directory (where stand the <b>'requirements.txt'</b></li>
-        <li>Type  <div class="alert alert-success">$ pip install -r requirements.txt</div> which will install all the requirements !</li>
-    </ol>
+    If not, activate the virtualenv : <div class="alert alert-success">$ workon apiclock</div>
+    Move to the apiclock directory (where stand the <b>'requirements.txt'</b><br/>
+    Type  <div class="alert alert-success">$ pip install -r requirements.txt</div> which will install all the requirements !<br/>
     <br/>
     <h4>Modify config file</h4>
     <br/>
     In the root <b>'apiclock'</b> directory:
     <br/>
-    <ul>
-        <li>Edit the file <b>'EDIT-config.py'</b> and type your information everywhere you see a sentence begining by "PUT HERE..."</li>
-        <li>Rename this file <b>'config.py'</b></li>
-        <li>Create a file called : <b>'data-dev.sqlite'</b></li>
-    </ul>
+     - Edit the file <b>'EDIT-config.py'</b> and type your information everywhere you see a sentence begining by "PUT HERE..."<br/>
+     - Rename this file <b>'config.py'</b><br/>
+     - Create a file called : <b>'data-dev.sqlite'</b><br/>
+     - Generate the database (import, create then leave the prompt): <div class="alert alert-success">$ python manage.py shell<br/><br/>
+         >>> from app import db<br/>
+         >>> db.create_all()<br/>
+         >>> exit()<br/>
+    </div>
+     - Populate database :  <div class="alert alert-success">$ python manage.py shell<br/><br/>
+         >>> Role.insert_roles()<br/>
+         >>> exit()<br/>
+    </div>
+     - Launch the App : <div class="alert alert-success">$ python manage.py runserver -h 0.0.0.0 -p 5000</div>
+     - Open your browser on the serveur IP of your rapsberry py (port=500) = <b>http://IP_OF_YOUR_RASPEBRRY:5000</b>
     
     {% else %}
-    <h2>Hello stranger</h2>
-    
-        
-    
-    {% endif %}</h5>
+    {% include '_public.html' %}
+    {% endif %}
      
 </div>
 {% endblock %}

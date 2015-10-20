@@ -4,6 +4,7 @@
 *.sqlite
 *.cfg
 admin.txt
+requirements.txt
 *.geany
 /app/static
 /tmp

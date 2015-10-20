@@ -5,18 +5,38 @@
 
 {% block page_content %}
 
-<h3>Admin STUFF</h3>
-
-<ul>
-        {% for line in data %}
-                <li>
-                {{line}}
-                </li>
-        {% endfor %}
-</ul>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-</div>
+<section class="tasks-widget">
+        <div class="panel-heading">
+            <div class="pull-left"><h4><i class="fa fa-tasks"></i> Todo List </h4></div>
+            <br/><br/>
+        </div>
+          <div class="panel-body">
+              <div class="task-content">
+                  <ul class="task-list">
+                {% for line in data %}
+                      <li>
+                          <div class="task-title">
+                              <span class="task-title-sp">{{line}}</span>
+                                {% if 'DONE' in line %}
+                                        <span class="badge">Done</span>
+                                {% endif %}
+                              <div class="pull-right hidden-phone">
+                                {% if 'DONE' not in line %}
+                                        <button class="btn btn-success btn-xs"><a href="{{line|truncate(3, false, end='/')}}"> <i class=" fa fa-check"></i></a> </button>
+                                {% endif %}
+<!--  <button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>-->
+                                  <button class="btn btn-danger btn-xs"><i class="fa fa-trash-o "></i></button>
+                              </div>
+                          </div>
+                      </li>
+                {% endfor %}
+                  </ul>
+              </div>
+                <div class=" add-task-row">
+                        {{ wtf.quick_form(form) }}
+                </div>
+        </div>
+</section>
 
 
 {% endblock %}
