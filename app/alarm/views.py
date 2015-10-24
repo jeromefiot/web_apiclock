@@ -41,6 +41,8 @@ def index(action, idr):
 
         ## setting up crontab
         result = addcronenvoi(monalarme)
+
+        # Add alarm in database
         if result == 0:
             alarme = Alarm(
                     namealarme=monalarme['nom'],
