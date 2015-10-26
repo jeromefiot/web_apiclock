@@ -2,9 +2,16 @@ from crontab import CronTab
 from mpd import MPDClient
 from threading import Thread
 import time
+import datetime
+import os, sys
 
+#get current environment variable for crontab commands
+env_path = os.environ['VIRTUAL_ENV']
+script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+cron_command = env_path + '/bin/python ' + script_path + '/mpdplay.py'
 
-newcron=CronTab(user=True)
+newcron = CronTab(user=True)
+
 
 class Snooze(Thread):
     """Thread Snooze"""
@@ -12,7 +19,7 @@ class Snooze(Thread):
         Thread.__init__(self)
         self.radio = radiosnooze
         self.duree = minutessnooze*60
-        client = MPDClient() 
+        client = MPDClient()
 
     def run(self):
         """lance jouerMPD patiente le temps minutesnooze puis stop MDP"""
@@ -22,24 +29,25 @@ class Snooze(Thread):
         time.sleep(self.duree)
         stopMPD()
 
-def addcronenvoi(idalarm,jourscron,heurescron,minutescron,frequence,path):
-    job=newcron.new(command='/home/pi/.virtualenvs/apiclock/bin/python /home/pi/apiclock/mpdplay.py '+path, comment='Alarme ID:'+str(idalarm))
-    job.hour.on(heurescron)
-    job.minute.on(minutescron)
-    job.dow.on(jourscron)
-    #job.hour.during(1,0).every(1)
-    if frequence == 'reboot':
-        job.every_reboot()
-    elif frequence =='days':
-        job.day.every(7)
-    elif frequence =='dows':
-        job.dow.on(jourscron)
-    elif frequence == 'frequency_per_year':
-        job.year.every()
-    else:
-        pass
+
+def addcronenvoi(monalarme):
+    job = newcron.new(command=cron_command + ' ' + monalarme['path'],
+        comment='Alarme ID:' + str(monalarme['id']))
+    jours = ",".join(map(str, monalarme['jours']))
+    job.setall(
+        monalarme['minute'],
+        monalarme['heure'],
+        '*',
+        '*',
+        jours)
+
     job.enable()
-    newcron.write()
+    try:
+        newcron.write()
+        return 0
+    except:
+        return 1
+
 
 def removecron(idalarm):
     newcron.remove_all(comment='Alarme ID:'+str(idalarm))
