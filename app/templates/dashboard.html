@@ -13,47 +13,72 @@
     </div>
 </div>
 
+
 <div class="col-md-4">
     <h2>PLAY</h2>
-    <form action="{{ url_for('main.dashboard') }}" method="post" class="form" name="form1">
+    <form action="" method="post" class="form" role="form">
         {{ form1.hidden_tag() }}
-        <div class="form-group" id="medias"><label class="control-label" for="media">{{ form1.media.label }}</label>
-            <select class="form-control" id="media" name="media">
+        <div class="form-group" id="form1-medias"><label class="control-label" for="form1-media">{{ form1.media.label }}</label>
+            <select class="form-control" id="form1-media" name="form1-media">
             {% for choice in form1.media.choices %}
                 <option value="{{choice[0]}}">{{ choice[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="radios"><label class="control-label" for="radio">{{ form1.radio.label }}</label>
-            <select class="form-control" id="radio" name="radio">
+        <div class="form-group" id="form1-radios"><label class="control-label" for="form1-radio">{{ form1.radio.label }}</label>
+            <select class="form-control" id="form1-radio" name="form1-radio">
             {% for radio in form1.radio.choices %}
                 <option value="{{radio[0]}}">{{ radio[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="podcasts"><label class="control-label" for="podcast">{{ form1.podcast.label }}</label>
-            <select class="form-control" id="podcast" name="podcast">
+        <div class="form-group" id="form1-podcasts"><label class="control-label" for="form1-podcast">{{ form1.podcast.label }}</label>
+            <select class="form-control" id="form1-podcast" name="form1-podcast">
             {% for podcast in form1.podcast.choices %}
                 <option value="{{podcast[0]}}">{{ podcast[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="musics"><label class="control-label" for="music">{{ form1.music.label }}</label>
-            <select class="form-control" id="music" name="music">
+        <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form1.music.label }}</label>
+            <select class="form-control" id="form1-music" name="form1-music">
                 {% for music in form1.music.choices %}
                     <option value="{{music[0]}}">{{ music[1] }}</option>
                 {% endfor %}
             </select>
         </div>
-        <input class="btn btn-default" type="submit" name="form1-submit" value="Jouer">
+        <input class="btn btn-default" id="form1-submit" name="form1-submit" type="submit" value="Jouer1">
     </form>
 </div>
 
-<!-- <div class="col-md-4">
-    <h2>SNOOZE</h2>
+<!--
+<div class="col-md-4">
+    <h2>SNOOZE2</h2>
+    <form action="{{ url_for('main.dashboard') }}" method="post" class="form">
+        {{ formsnooze.hidden_tag() }}
+        <div class="form-group" id="radiosnoozes"><label class="control-label" for="media">{{ formsnooze.radiosnooze.label }}</label>
+            <select class="form-control" id="radiosnooze" name="radiosnooze">
+            {% for choice in formsnooze.radiosnooze.choices %}
+                <option value="{{choice[0]}}">{{ choice[1] }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" id="duree"><label class="control-label" for="radio">{{ formsnooze.minutessnooze.label }}</label>
+            <select class="form-control" id="radio" name="radio">
+            {% for radio in formsnooze.minutessnooze.choices %}
+                <option value="{{radio[0]}}">{{ radio[1] }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        {{ formsnooze.submitsnooze }}
+        <input class="btn btn-default" type="submit" value="Snooze">
+    </form>
+</div> 
+<div class="col-md-4">
+    <h2>PLAY</h2>
     {{ wtf.quick_form(form1) }}
-</div>
- -->
+</div> -->
+
+
 <div class="col-md-4">
     <h2>SNOOZE</h2>
     {{ wtf.quick_form(formsnooze) }}

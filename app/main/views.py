@@ -48,6 +48,36 @@ def apiclock():
     return render_template('index.html')
 
 
+@main.route('/presentation')
+def presentation():
+    
+    return render_template('public/presentation.html')
+
+
+@main.route('/blog')
+def blog():
+    
+    return render_template('public/blog.html')
+
+
+@main.route('/thanks')
+def thanks():
+    
+    return render_template('public/thanks.html')
+
+
+@main.route('/cv')
+def cv():
+    
+    return render_template('public/cv.html')
+
+
+@main.route('/installation')
+def installation():
+    
+    return render_template('public/installation.html')
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -78,10 +108,10 @@ def index():
 #========================================
 
 @main.route('/dashboard', methods=['GET', 'POST'], defaults = {'action':4})
-@main.route('/dashboard/<action>', methods=['GET', 'POST'])
+@main.route('/dashboard/<action>/<musique>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def dashboard(action):
+def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3"):
     
     client = MPDClient()
     client.connect("localhost", 6600)
@@ -89,38 +119,43 @@ def dashboard(action):
     form1 = playerForm(prefix="form1")
     formsnooze = snoozeForm()
     
-    if formsnooze.validate_on_submit() and formsnooze.submitsnooze.data:
+    if formsnooze.submitsnooze.data:
         """recup radio par id et retourne url a jouerMPD()"""
         radiosnooze = formsnooze.radiosnooze.data
         radiosnooze = Music.query.filter(Music.id==radiosnooze).first()
         radiosnooze = radiosnooze.url
-        minutessnooze = float(formsnooze.minutessnooze.data)
+        minutessnooze = int(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
         return redirect(url_for('.dashboard'))
     
-    elif form1.validate_on_submit() and form1.form1-submit.data and request.form['form1-submit'] == 'Jouer':
+    elif form1.submit.data:
         """suivant le type de media recup id de celui ci puis requete pour url"""
-        radio = form1.form1-radio.data
-        flash ('zarma')
+        radio = form1.radio.data
+        media = Music.query.filter(Music.id==radio).first()
+        jouerMPD(media.url)
         return redirect(url_for('.dashboard'))
     
-    # recup du param en GET = action
+    # get in GET the action's param
     elif action == '1':
+        """play the urlmedia passed in args with a 110% volum"""
+        os.system('amixer sset PCM,0 92%')
+        client.stop()
         client.clear()
-        client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
+        client.add("http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3")
         client.play()
         return redirect(url_for('.dashboard'))
     elif action == '0':
+        """stop and clear MPD playlist"""
         client.clear()
         client.stop()
         client.close()
         return redirect(url_for('.dashboard'))
     elif action == '2':
-        """Augmente le son"""
+        """Increase volume by 3dB"""
         os.system('amixer sset PCM,0 3dB+')
         return redirect(url_for('.dashboard'))
     elif action == '3':
-        """Diminue le son"""
+        """Decrease volume by 3dB"""
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :

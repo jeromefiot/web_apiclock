@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Apiclock - installation{% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+    <h1>How to set up your APICLOCK</h1>
+    
+    <div id="table-of-contents">
+        <h3><span class="icon-list"></span>Table of Contents</h3>
+    
+    <ul>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#environement">Environment</a></li>
+        <li><a href="#installation">Installation</a></li>
+    </ul>
+    </div>
+    
+    <hr>
+    <div id="requirements"></div>
+    <h3>1. REQUIREMENTS</h3>
+    <br/>
+    <h4>Hardware</h4>
+    This project aims to set up an alarm clock over rapsberry pi.<br/>
+    I test this on a raspberry pi B+ but it should work on others version
+    SO here is the list of hardware you need : <br/>
+    <ul>
+        <li>1 Raspberry pi</li>
+        <li>1 Power supply (5v / 1A)</li>
+        <li>Speakers USB powered (<a href="https://www.google.fr/search?q=usb+powered+speaker&es_sm=91&biw=1440&bih=779&tbm=shop&source=lnms&sa=X&ved=0CAcQ_AUoAWoVChMI7ZDPgrzJyAIVQskaCh3g4gSX&dpr=1#spd=15864847755340973458" target="_blank">exemple</a>) </li>
+        <li>USB Wifi adapter OR LAN connection (RJ45)</li>
+    </ul>
+    <br/>
+    <h4>Update & upgrade your Pi</h4>
+    <br/>
+    
+    First, update your system's package list by entering the following command in LXTerminal or from the command line:<br/>
+   <div class="alert alert-success">
+        <p>
+            $ sudo apt-get update
+        </p>
+    </div>
+    Next, upgrade all your installed packages to their latest versions with the command:<br/>
+    <div class="alert alert-success">
+        <p>
+            $ sudo apt-get upgrade
+        </p>
+    </div>
+    
+    <hr>
+    <div id="environement"></div>
+    <h3>2. ENVIRONMENT</h3>
+    <br/>
+    <h4>Install Git, Virtualenv & VirtualenvWrapper</h4>
+    <br/>
+    Because it's a good thing to :
+    <ul>
+        <li>Get the code from Github and have it up to date, Git is needed</li>
+        <li>Isolate package, virtualenv allow you to create separate space for testing specific pakages without installing them on your main environment.
+        <br/>
+        (VirtualenvWrapper gives you an easier way to manipulate virtualenv.)
+        </li>
+     </ul>
+    <div class="alert alert-success">
+        <p>
+            # install Git<br/>
+            $ sudo apt-get install git-core<br/>
+            <br/>
+            # install virtualenv and virtualenvwrapper<br/>
+            $ sudo pip install virtualenv virtualenvwrapper<br/>
+            <br/>
+            # edit the .bashrc file<br/>
+            $ vim .bashrc<br/>
+            <br/>
+            # to enable virtualenvwrapper add this line to the end of the file<br/>
+            source /usr/local/bin/virtualenvwrapper.sh<br/>
+            #save and quit your editor<br/>
+            <br/>
+            # exit and log back in to restart your shell<br/>
+            $ exit<br/>
+        </p>
+    </div>
+    <br/>
+    <h4>Create a vitualenv</h4>
+    <br/>
+    You now can create virtualenv (name it 'apiclock') with the VirtualenvWrapper syntax (find here <a href="https://virtualenvwrapper.readthedocs.org/en/latest/command_ref.html" target="_blank">the main commands of virtualenvWrapper</a>) <br/>
+    <br/>
+    <div class="alert alert-success">
+        <p>
+            # create a virtualenv, you can give the name you want and for the exemple we'll name it <b>'apiclock'</b><br/>
+            $ mkvirtualenv apiclock<br/>
+            <br/>
+            # The virtualenv will be activated automatically.<br/>
+            # to list all virtualenvs you have created<br/>
+            $ workon<br/>
+            <br/>
+            # to activate the virtualenv you want (for this exemple we want activate the 'betterworld' virtualenv)<br/>
+            $ workon betterworld<br/>
+            <br/>
+            # To deactivate a virtualenv and get back to main environment<br/>
+            $ deactivate<br/>
+        </p>
+    </div>
+    
+    <hr>
+    <div id="installation"></div>
+    <h3>3. INSTALLATION</h3>
+    <br/>
+    <h4>Get the code from Github</h4>
+    <br/>
+    Simply go where you want to save the directory on your computer (for me : /home/pi) and type<br/>
+    <br/>
+    <div class="alert alert-success">
+        <p>
+            $ git clone https://github.com/jeromefiot/Apiclock.git
+        </p>
+    </div>
+    <br/>
+    <h4>Install needed modules / packages</h4>
+    <br/>
+    By default Python is installed on Raspberry pi but you need more packages. all these packages are available in the directory 'apiclock' you just cloned in the <b>'requirements.txt'</b>.<br/>
+    Some packages (like 'Flask-Migrate' for example) are only useful on a developmenent context and if you don't want to dive in the code you could delete it.<br/>
+    <br/>
+    To install all these modules :<br/><br/>
+    If not, activate the virtualenv : <div class="alert alert-success">$ workon apiclock</div>
+    Move to the apiclock directory (where stand the <b>'requirements.txt'</b><br/>
+    Type  <div class="alert alert-success">$ pip install -r requirements.txt</div> which will install all the requirements !<br/>
+    <br/>
+    <h4>Modify config file</h4>
+    <br/>
+    In the root <b>'apiclock'</b> directory:
+    <br/>
+     - Edit the file <b>'EDIT-config.py'</b> and type your information everywhere you see a sentence begining by "PUT HERE..."<br/>
+     - Rename this file <b>'config.py'</b><br/>
+     - Create a file called : <b>'data-dev.sqlite'</b><br/>
+     - Generate the database (import, create then leave the prompt): <div class="alert alert-success">$ python manage.py shell<br/><br/>
+         >>> from app import db<br/>
+         >>> db.create_all()<br/>
+         >>> exit()<br/>
+    </div>
+     - Populate database :  <div class="alert alert-success">$ python manage.py shell<br/><br/>
+         >>> Role.insert_roles()<br/>
+         >>> exit()<br/>
+    </div>
+     - Launch the App : <div class="alert alert-success">$ python manage.py runserver -h 0.0.0.0 -p 5000</div>
+     - Open your browser on the serveur IP of your rapsberry py (port=500) = <b>http://IP_OF_YOUR_RASPEBRRY:5000</b>
+    
+    
+</div>
+{% endblock %}
