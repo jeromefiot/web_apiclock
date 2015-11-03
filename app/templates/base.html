@@ -132,8 +132,9 @@
                         <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
                         <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
                         <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
-                        <li><a href="{{ url_for('main.admin_stuff') }}">Reminder</a></li>
                         <li><a href="{{ url_for('main.users') }}">Users</a></li>
+                        <li><a href="{{ url_for('main.diskutil') }}">diskutil</a></li>
+                        <li><a href="{{ url_for('main.admin_stuff') }}">Reminder</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -165,4 +166,5 @@
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
+    {{ moment.lang("fr") }}
 {% endblock %}

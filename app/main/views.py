@@ -1,13 +1,14 @@
 # coding: utf-8
 
-from flask import render_template, redirect, url_for, abort, flash, request
+from flask import render_template, redirect, url_for, abort, flash, request, send_from_directory
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Mail, Message
 from sqlalchemy.sql import and_
 from crontab import CronTab
 from mpd import MPDClient
 from threading import Thread
-import os
+import os, pickle
+import subprocess
 
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm,\
@@ -115,6 +116,8 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     
     client = MPDClient()
     client.connect("localhost", 6600)
+    
+    alarms = Alarm.query.filter_by(users=current_user.id).all()
 
     form1 = playerForm(prefix="form1")
     formsnooze = snoozeForm()
@@ -138,7 +141,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     # get in GET the action's param
     elif action == '1':
         """play the urlmedia passed in args with a 110% volum"""
-        os.system('amixer sset PCM,0 92%')
+        os.system('amixer sset PCM,0 94%')
         client.stop()
         client.clear()
         client.add("http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3")
@@ -159,7 +162,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :
-        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze)
+        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze, alarms=alarms)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -220,21 +223,56 @@ def users():
         db.session.commit()
         flash('The user has been deleted.')
         return redirect(url_for('.users', users=user))
-    return render_template('users.html', users=user)
+    return render_template('admin/users.html', users=user)
+
+
+@main.route('/diskutil')
+@login_required
+@admin_required
+def diskutil():
+    commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
+    retour = commande.stdout.readlines()
+    
+    return render_template('/admin/diskutil.html', test=retour)
 
 
 @main.route('/admin_stuff', methods=['GET', 'POST'])
-@main.route('/admin_stuff/<int:id>', methods=['GET', 'POST'])
+@main.route('/admin_stuff/<idline>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def admin_stuff():
+def admin_stuff(idline='0'):
     form = addAdmin()
-    with open('/home/pi/apiclock/admin.txt', 'a+') as f:
-        if form.validate_on_submit():
-            ajout = form.about_me.data
-            f.write(ajout+'\n')
-            return redirect(url_for('.admin_stuff'))
-        data = f.readlines()
-        data = [str(i)+'/'+str(val) for i, val in enumerate(data)]
-
+    
+    f = open('/home/pi/apiclock/admin.txt', 'r')
+    data1 = f.readlines()
+    data = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
+    
+    if form.validate_on_submit():
+        f = open('/home/pi/apiclock/admin.txt', 'a+')
+        """add line to the admin.txt with number"""
+        ajout = form.about_me.data
+        f.write(ajout+'\n')
+        f.close()
+        return redirect(url_for('.admin_stuff'))
+    
+    elif 'modify' in idline:
+        """ load txt in a list, add DONE --- to the idline list element and write new txt"""
+        test = idline.split()[0]
+        data1[int(test)]='DONE --- '+data1[int(test)]
+        f = open('/home/pi/apiclock/admin.txt', 'w')
+        for line in data1:
+            f.write(line)
+        f.close()
+        return redirect(url_for('.admin_stuff'))
+    
+    elif 'delete' in idline:
+        """ load txt in a list, del the idline list element and write new txt"""
+        test = idline.split()[0]
+        del data1[int(test)]
+        f = open('/home/pi/apiclock/admin.txt', 'w')
+        for line in data1:
+            f.write(line)
+        f.close()
+        return redirect(url_for('.admin_stuff'))
+        
     return render_template('admin_stuff.html', form=form, data=data)

@@ -84,4 +84,14 @@
     {{ wtf.quick_form(formsnooze) }}
 </div>
 
+<div class="col-md-4">
+    <h2>ALARMS</h2>
+    Nous sommes {{ moment().format('dddd(E) - h:m') }}<br/>
+    <br/>
+    {% for alarm in alarms %}
+        {{alarm.namealarme}}  //  {{alarm.days}} - {{alarm.startdate}} <br/>
+    {% endfor %}
+    
+</div>
+    
 {% endblock %}

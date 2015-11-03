@@ -19,10 +19,11 @@ class Permission:
 
 
 class Alarm(db.Model):
-    """ Alarmes (ajoutees par cron pour chaque user)
+    """ Alarms (add by cronjob for each user)
     """
     __tablename__ = 'alarm'
     id = db.Column(db.Integer, primary_key=True)
+    state = db.Column(db.Boolean(), default=True)
     namealarme = db.Column(db.String(120))
     startdate = db.Column(db.String(64))
     duration = db.Column(db.String(140))

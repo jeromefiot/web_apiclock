@@ -4,28 +4,14 @@ from sqlalchemy.sql import and_
 from mpd import MPDClient
 import os.path
 import urllib
-import subprocess
 import feedparser
+
 from . import radio
 from .forms import AddMusicForm, PlayRadio
 from .. import db
 from ..models import User, Music
 from ..decorators import admin_required
-
-#============= FONCTIONS ============
-
-def jouerMPD(path):
-    """   """
-    client = MPDClient()               # create client object
-    #client.timeout = 10                # network timeout in seconds (floats allowed), default: None
-    #client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
-    client.connect("localhost", 6600)  # connect to localhost:6600
-    client.add(path)
-    client.play()
-    #client.close()                     # send the close command
-    #client.disconnect()                # disconnect from the server
-
-#====================================
+from ..functions import jouerMPD
 
 @radio.route('/', methods=['GET', 'POST'], defaults = {'action':0, 'radioe':0})
 @radio.route('/<int:action>/<int:radioe>', methods=['GET', 'POST'])
@@ -123,14 +109,9 @@ def edit(radioedit):
 def podcast(action):
     """ Display podcasts subscription list for current user"""
     
-    commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
-    retour = commande.stdout.readlines()
-    
-    if action == 'rien':
-        podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-        test = 'rien'
+    podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
         
-    elif action == "unsubscribe":
+    if action == "unsubscribe":
         idmusic = request.args.get('music_id')
         podcast = Music.query.filter(Music.id==idmusic).first()
         db.session.delete(podcast)
@@ -143,7 +124,7 @@ def podcast(action):
         podcast = Music.query.filter(Music.id==idmusic).first()
         d = feedparser.parse(podcast.url)
         shows=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
-        return render_template('radio/shows.html', shows=shows)
+        return render_template('radio/shows.html', shows=shows, titre=podcast.name)
     
     elif action == "donwload":
         urlmusic = request.args.get('urlpodcast')
@@ -151,7 +132,7 @@ def podcast(action):
         urllib.urlretrieve(urlmusic, "/home/pi/apiclock/app/static/podcast/"+nompodcast)
         return redirect(url_for('.podcast'))
     
-    return render_template('radio/podcast.html', podcasts=podcasts, test=retour)
+    return render_template('radio/podcast.html', podcasts=podcasts)
 
 
 @radio.route('/local/<path:radio>')

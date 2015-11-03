@@ -5,17 +5,32 @@
 
 {% block page_content %}
 
+<h1>{{ titre }} </H1>
+<br/>
 {% if shows %}
-    <ul>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Emission</th>
+			<th>Action</th>
+		</tr>
+	</thead>
+	<tbody>
         {% for show in shows %}
-        <li>
-            {{ show[0] }}
-            // <a href="{{ url_for('radio.local', radio=show[1])  }}"> Jouer en local </a>
-            // <a href="{{ url_for('radio.distant', radio=show[1])  }}"> Jouer en distant </a>
-            // <a href="{{ url_for('radio.podcast', action='donwload', urlpodcast=show[1], nompodcast=show[0]) }}"> Télécharger </a>
-        </li>
+        <tr>
+            <td> {{ show[0] }}</td>
+            <td>
+                <a href="{{ url_for('radio.local', radio=show[1])  }}" 
+                    class="btn btn-primary btn-sm active" role="button"> Jouer en local </a>
+                <a href="{{ url_for('radio.distant', radio=show[1])  }}" 
+                    class="btn btn-primary btn-sm active" role="button"> Jouer en distant </a>
+                <a href="{{ url_for('radio.podcast', action='donwload', urlpodcast=show[1], nompodcast=show[0]) }}"
+                    class="btn btn-primary btn-sm active" role="button"> Télécharger </a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
+	</tbody>
+</table>
 {% endif %}
 
 {% endblock %}

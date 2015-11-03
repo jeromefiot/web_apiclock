@@ -4,6 +4,9 @@ from threading import Thread
 import time
 import datetime
 import os, sys
+from . import db, login_manager
+from .models import Alarm, Music
+
 
 #get current environment variable for crontab commands
 env_path = os.environ['VIRTUAL_ENV']
@@ -14,7 +17,7 @@ newcron = CronTab(user=True)
 
 
 class Snooze(Thread):
-    """Thread Snooze"""
+    """Activate a thread for Snooze function"""
     def __init__(self, radiosnooze, minutessnooze):
         Thread.__init__(self)
         self.radio = radiosnooze
@@ -31,12 +34,15 @@ class Snooze(Thread):
 
 
 def addcronenvoi(monalarme):
+    """ transform and add alarm in crontab with a duration of 1h"""
+    testduree = int(monalarme['heure'])+2
+
     job = newcron.new(command=cron_command + ' ' + monalarme['path'],
         comment='Alarme ID:' + str(monalarme['id']))
     jours = ",".join(map(str, monalarme['jours']))
     job.setall(
         monalarme['minute'],
-        monalarme['heure'],
+        str(monalarme['heure'])+'-'+str(testduree),
         '*',
         '*',
         jours)
@@ -53,11 +59,29 @@ def removecron(idalarm):
     newcron.remove_all(comment='Alarme ID:'+str(idalarm))
     newcron.write()
 
+
+def statealarm(idalarm):
+    """Find the existing alarm by id in comment of crontable and activate or deactivate it """
+    actionalarm = newcron.find_comment('Alarme ID:'+str(idalarm))
+    actionalarm = next(actionalarm)
+    alarms = Alarm.query.filter(Alarm.id==idalarm).first()
+    print alarms.state
+    
+    if alarms.state == True:    
+        alarms.state = 0
+        actionalarm.enable(False)
+        db.session.commit()
+    else :
+        alarms.state = 1
+        actionalarm.enable(True)
+        db.session.commit()
+
+
 def getpodcasts():
-    #recup les podcats du user
+    """Get all podcats for the current_user podcast-show"""
     podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
     listepodcast = []
-    #recup pour chaque podcast les url de ts les emissions
+    #Get URL of all emissions off the podcast  
     for emission in podcasts:
         d = feedparser.parse(emission.url)
         emissions=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]

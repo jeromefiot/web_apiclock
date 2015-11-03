@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-
 {% block title %}ApiClock - Podcasts{% endblock %}
 
 {% block page_content %}
 
+<h1>PODCASTS</h1>
+<br/>
 <table class="table table-striped">
 	<thead>
 		<tr>
@@ -25,13 +26,7 @@
 			</tr>
 			{% endfor %}
 		{% endif %}
-	</tbody
+	</tbody>
 </table>
-<br/>
-<div>
-	{% for line in test %}
-			{{ line }} <br/>
-	{% endfor %}
-</div>
 
 {% endblock %}

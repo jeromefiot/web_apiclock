@@ -40,10 +40,17 @@
 			<td>{{ alarm.days }}</td>
 			<td>{{ alarm.frequence }}</td>
 			<td>
-                                <a href="{{url_for('alarm.index', action='2', idr=alarm.id)}}" class="btn btn-default btn-sm active"
-                                   role="button">Editer</a>
-                                <a href="{{url_for('alarm.index', action='1', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
-                                   role="button">Supprimer</a>
+                {% if alarm.state == 1 %}
+                    <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
+                   role="button">Desactiver</a>
+                {% else %}
+                    <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-success btn-sm active"
+                   role="button">Activer</a>
+                {% endif %}
+                <a href="{{url_for('alarm.index', action='2', idr=alarm.id)}}" class="btn btn-default btn-sm active"
+                   role="button">Editer</a>
+                <a href="{{url_for('alarm.index', action='1', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
+                   role="button">Supprimer</a>
 			</td>
 		</tr>
 		{% endfor %}

@@ -8,24 +8,31 @@ from . import alarm
 from .forms import addAlarmForm
 from .. import db
 from ..models import Role, User, Alarm, Music
-from ..functions import addcronenvoi, removecron
+from ..functions import addcronenvoi, removecron, statealarm
 from ..decorators import admin_required
 
 
-@alarm.route('/', methods=['GET', 'POST'],
-     defaults={'action': '0', 'idr': 'N'})
+@alarm.route('/', methods=['GET', 'POST'], defaults={'action': '0', 'idr': 'N'})
 @alarm.route('/<action>/<idr>', methods=['GET', 'POST'])
 @login_required
 @admin_required
+
 def index(action, idr):
     alarms = Alarm.query.filter(Alarm.users == current_user.id).all()
     radios = Music.query.filter(and_(Music.music_type == '1',
         Music.users == current_user.id)).all()
-    form = addAlarmForm()
+        
+    form = addAlarmForm(state=True)
     monalarme = {}
 
     if form.validate_on_submit():
+        print form.state.data
         monalarme['nom'] = form.name.data
+        if form.state.data:
+            monalarme['state'] = '1'
+        else:
+            monalarme['state'] = '0'
+        # monalarme['duration'] = form.duration.data
         monalarme['heure'] = form.heures.data
         monalarme['minute'] = form.minutes.data
         monalarme['repetition'] = form.repetition.data
@@ -46,6 +53,8 @@ def index(action, idr):
         if result == 0:
             alarme = Alarm(
                     namealarme=monalarme['nom'],
+                    state=monalarme['state'],
+                    # duration=monalarme['duration'],
                     days=",".join([str(x) for x in monalarme['jours']]),
                     startdate=str(monalarme['heure'])
                          + ':' + str(monalarme['minute']),
@@ -54,7 +63,7 @@ def index(action, idr):
             db.session.add(alarme)
             try:
                 db.session.commit()
-                flash('Your alarm has been programed.')
+                flash('Your alarm has been programed.'+monalarme['duration'])
             except:
                 flash('Error adding your alarm in database.')
         else:
@@ -69,14 +78,20 @@ def index(action, idr):
         db.session.commit()
         flash('Alarm has been deleted')
         return redirect(url_for('.index'))
-
+    
     elif action == '2':
     # retourne la page en edition avec l'alarme de l'id recu
         alarmeedit = Alarm.query.filter(Alarm.id == idr).first()
-        print alarmeedit
         form = addAlarmForm(obj=alarmeedit)
         return render_template("alarm/alarm.html",
              form=form, user=current_user, alarms=alarms, radios=radios)
+    
+    elif action == '3':
+    # Call statealarm function which activate / deactivate alarm 
+        statealarm(idr)
+        return render_template("alarm/alarm.html",
+            form=form, user=current_user, alarms=alarms, radios=radios)
+    
     else:
         return render_template("alarm/alarm.html",
              form=form, user=current_user, alarms=alarms, radios=radios)

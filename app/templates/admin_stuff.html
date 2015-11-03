@@ -18,14 +18,14 @@
                           <div class="task-title">
                               <span class="task-title-sp">{{line}}</span>
                                 {% if 'DONE' in line %}
-                                        <span class="badge">Done</span>
+                                    <span class="badge bg-warning">Done</span>
                                 {% endif %}
-                              <div class="pull-right hidden-phone">
+                                <div class="pull-right hidden-phone">
                                 {% if 'DONE' not in line %}
-                                        <button class="btn btn-success btn-xs"><a href="{{line|truncate(3, false, end='/')}}"> <i class=" fa fa-check"></i></a> </button>
+                                    <a class="btn btn-success" href="{{ url_for('main.admin_stuff', idline=line|replace("/", " ")|truncate(4,False,end=' modify')) }}"><i class=" fa fa-check"></i></a>
                                 {% endif %}
 <!--  <button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>-->
-                                  <button class="btn btn-danger btn-xs"><i class="fa fa-trash-o "></i></button>
+                                <a class="btn btn-danger" href="{{ url_for('main.admin_stuff', idline=line|replace("/", " ")|truncate(4,False,end=' delete')) }}"><i class="fa fa-trash-o "></i></a> 
                               </div>
                           </div>
                       </li>
@@ -37,6 +37,5 @@
                 </div>
         </div>
 </section>
-
 
 {% endblock %}

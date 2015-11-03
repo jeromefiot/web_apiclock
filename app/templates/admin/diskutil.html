@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}ApiClock - Diskutil{% endblock %}
+{% block page_content %}
+
+<h1>DISK SPACE </h1>
+<br/>
+<div>
+    <table class="table table-striped">
+    <!--        get the line from the command-line bloc result and split it in the tabble  -->
+        <tbody>
+            {% for line in test %}
+            <tr>
+                {% set line1 = line.split() %}
+                    <td><strong>{{ line1[0] }}</strong></td>
+                    <td>{{ line1[1] }}</td>
+                    <td>{{ line1[2] }}</td>
+                    <td>{{ line1[3] }}</td>
+                    <td>{{ line1[4] }}</td>
+                    <td>{{ line1[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
