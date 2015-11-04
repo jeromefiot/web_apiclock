@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}ApiClock - Podcasts{% endblock %}
+{% block title %}Apiclock - Alarm{% endblock %}
 
 {% block page_content %}
 
@@ -21,6 +21,51 @@
         </div>
     </div>
 </div>
+
+
+<!-- ********************************************************** -->
+<hr>
+    <form action="" method="post" class="form" role="form">
+        {{ form2.hidden_tag() }}
+        
+        <div class="form-group" id="form1-name"><label class="control-label" for="form1-name">{{ form2.name.label }}</label>
+            {{ form2.name }}
+        </div>
+        
+        <div class="form-group" id="form1-medias"><label class="control-label" for="form1-media">{{ form2.media.label }}</label>
+            <select class="form-control" id="form1-media" name="form1-media">
+            {% for choice in form2.media.choices %}
+                <option value="{{choice[0]}}">{{ choice[1] }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" id="form1-radios"><label class="control-label" for="form1-radio">{{ form2.radio.label }}</label>
+            <select class="form-control" id="form1-radio" name="form1-radio">
+            {% for radio in form2.radio.choices %}
+                <option value="{{radio[0]}}">{{ radio[1] }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" id="form1-podcasts"><label class="control-label" for="form1-podcast">{{ form2.podcast.label }}</label>
+            <select class="form-control" id="form1-podcast" name="form1-podcast">
+            {% for podcast in form2.podcast.choices %}
+                <option value="{{podcast[0]}}">{{ podcast[1] }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form2.music.label }}</label>
+            <select class="form-control" id="form1-music" name="form1-music">
+                {% for music in form2.music.choices %}
+                    <option value="{{music[0]}}">{{ music[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input class="btn btn-default" id="form1-submit" name="form1-submit" type="submit" value="Jouer">
+    </form>
+
+<hr>
+<!-- ********************************************************** -->
+
 
 <h2>ALARMES</h2>
 

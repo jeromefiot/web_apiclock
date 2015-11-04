@@ -9,6 +9,7 @@ from mpd import MPDClient
 from threading import Thread
 import os, pickle
 import subprocess
+import datetime
 
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm,\
@@ -246,12 +247,23 @@ def admin_stuff(idline='0'):
     f = open('/home/pi/apiclock/admin.txt', 'r')
     data1 = f.readlines()
     data = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
+    today = datetime.datetime.now().strftime('%d-%m-%y')
     
     if form.validate_on_submit():
         f = open('/home/pi/apiclock/admin.txt', 'a+')
-        """add line to the admin.txt with number"""
+        """add line to the admin.txt with number and extract date """
         ajout = form.about_me.data
-        f.write(ajout+'\n')
+        # extract date if mentionned ('__') else add tomorow for the date
+        if '__' in ajout :
+            date_todo = ajout[-8:]
+            date_todo = datetime.datetime.strptime(date_todo, '%d-%m-%y').date()
+            text_todo = ajout[:-8]
+        else:
+            text_todo = ajout
+            date_todo = datetime.datetime.now()+datetime.timedelta(days=1)
+            date_todo = date_todo.strftime('%d-%m-%y')
+            
+        f.write(text_todo+'__'+str(date_todo)+'\n')
         f.close()
         return redirect(url_for('.admin_stuff'))
     
@@ -266,7 +278,7 @@ def admin_stuff(idline='0'):
         return redirect(url_for('.admin_stuff'))
     
     elif 'delete' in idline:
-        """ load txt in a list, del the idline list element and write new txt"""
+        """ get the id (by splitting the line) of the element, delete it, re write the new txt"""
         test = idline.split()[0]
         del data1[int(test)]
         f = open('/home/pi/apiclock/admin.txt', 'w')
@@ -275,4 +287,4 @@ def admin_stuff(idline='0'):
         f.close()
         return redirect(url_for('.admin_stuff'))
         
-    return render_template('admin_stuff.html', form=form, data=data)
+    return render_template('admin_stuff.html', form=form, data=data, today=today)

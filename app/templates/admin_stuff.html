@@ -7,17 +7,23 @@
 
 <section class="tasks-widget">
         <div class="panel-heading">
-            <div class="pull-left"><h4><i class="fa fa-tasks"></i> Todo List </h4></div>
+            <div class="pull-left"><h4><i class="fa fa-tasks"></i> Todo List du {{today}}</h4></div>
             <br/><br/>
         </div>
           <div class="panel-body">
               <div class="task-content">
                   <ul class="task-list">
                 {% for line in data %}
-                      <li>
+                    {% if today in line %}
+                    <!-- change background color if date of todo is today -->
+                        <li style="background-color: #dddddd;">
+                        {% else %}
+                        <li >
+                    {% endif %}
                           <div class="task-title">
-                              <span class="task-title-sp">{{line}}</span>
+                                <span class="task-title-sp">{{line}}</span>
                                 {% if 'DONE' in line %}
+                                <!-- add badge if todo is done -->
                                     <span class="badge bg-warning">Done</span>
                                 {% endif %}
                                 <div class="pull-right hidden-phone">
@@ -33,7 +39,7 @@
                   </ul>
               </div>
                 <div class=" add-task-row">
-                        {{ wtf.quick_form(form) }}
+                    {{ wtf.quick_form(form) }}
                 </div>
         </div>
 </section>

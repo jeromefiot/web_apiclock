@@ -5,7 +5,7 @@ from crontab import CronTab
 import feedparser
 
 from . import alarm
-from .forms import addAlarmForm
+from .forms import addAlarmForm, addAlarmForm2
 from .. import db
 from ..models import Role, User, Alarm, Music
 from ..functions import addcronenvoi, removecron, statealarm
@@ -23,6 +23,7 @@ def index(action, idr):
         Music.users == current_user.id)).all()
         
     form = addAlarmForm(state=True)
+    form2 = addAlarmForm2(state=True)
     monalarme = {}
 
     if form.validate_on_submit():
@@ -84,14 +85,14 @@ def index(action, idr):
         alarmeedit = Alarm.query.filter(Alarm.id == idr).first()
         form = addAlarmForm(obj=alarmeedit)
         return render_template("alarm/alarm.html",
-             form=form, user=current_user, alarms=alarms, radios=radios)
+             form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
     
     elif action == '3':
     # Call statealarm function which activate / deactivate alarm 
         statealarm(idr)
         return render_template("alarm/alarm.html",
-            form=form, user=current_user, alarms=alarms, radios=radios)
+            form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
     
     else:
         return render_template("alarm/alarm.html",
-             form=form, user=current_user, alarms=alarms, radios=radios)
+             form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
