@@ -84,6 +84,7 @@
     {{ wtf.quick_form(formsnooze) }}
 </div>
 
+
 <div class="col-md-4">
     <h2>ALARMS</h2>
     Nous sommes {{ moment().format('dddd(E) - h:m') }}<br/>
@@ -92,6 +93,17 @@
         {{alarm.namealarme}}  //  {{alarm.days}} - {{alarm.startdate}} <br/>
     {% endfor %}
     
+</div>
+
+
+<div class="row" style="margin:2px;">
+    <div class="col-md-8">
+        <h2>TODO of the DAY</h2>
+        <br/>
+        {% for element in listedujour %}
+            {{element}} <br/>
+        {% endfor %}
+    </div>
 </div>
     
 {% endblock %}

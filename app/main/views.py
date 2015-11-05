@@ -119,7 +119,19 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     client.connect("localhost", 6600)
     
     alarms = Alarm.query.filter_by(users=current_user.id).all()
-
+        
+    # load todo list and search for today todo
+    f = open('/home/pi/apiclock/admin.txt', 'r')
+    data1 = f.readlines()
+    today = datetime.datetime.now().strftime('%d-%m-%y')
+    listedujour = []
+    for element in data1:
+        if element[-9:-1] == today:
+            # cut end (= date )and remove last element (/) then compare with date
+            listedujour.append(element)
+        else : 
+            pass
+    
     form1 = playerForm(prefix="form1")
     formsnooze = snoozeForm()
     
@@ -163,7 +175,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :
-        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze, alarms=alarms)
+        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze, alarms=alarms, listedujour=listedujour)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
