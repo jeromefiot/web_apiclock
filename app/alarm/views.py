@@ -22,8 +22,8 @@ def index(action, idr):
     radios = Music.query.filter(and_(Music.music_type == '1',
         Music.users == current_user.id)).all()
         
-    form = addAlarmForm(state=True)
-    form2 = addAlarmForm2(state=True)
+    form      = addAlarmForm(state=True)
+    form2     = addAlarmForm2(state=True)
     monalarme = {}
 
     if form.validate_on_submit():
@@ -34,11 +34,11 @@ def index(action, idr):
         else:
             monalarme['state'] = '0'
         # monalarme['duration'] = form.duration.data
-        monalarme['heure'] = form.heures.data
-        monalarme['minute'] = form.minutes.data
+        monalarme['heure']      = form.heures.data
+        monalarme['minute']     = form.minutes.data
         monalarme['repetition'] = form.repetition.data
-        monalarme['jours'] = form.jours.data
-        monalarme['path'] = form.Radio.data.url
+        monalarme['jours']      = form.jours.data
+        monalarme['path']       = form.Radio.data.url
 
         lastid = alarms[-1].id
 
@@ -53,14 +53,14 @@ def index(action, idr):
         # Add alarm in database
         if result == 0:
             alarme = Alarm(
-                    namealarme=monalarme['nom'],
-                    state=monalarme['state'],
+                    namealarme  =monalarme['nom'],
+                    state       =monalarme['state'],
                     # duration=monalarme['duration'],
-                    days=",".join([str(x) for x in monalarme['jours']]),
-                    startdate=str(monalarme['heure'])
-                         + ':' + str(monalarme['minute']),
-                    frequence='dows',
-                    users=current_user.id)
+                    days        =",".join([str(x) for x in monalarme['jours']]),
+                    startdate   =str(monalarme['heure'])
+                                + ':' + str(monalarme['minute']),
+                    frequence   ='dows',
+                    users       =current_user.id)
             db.session.add(alarme)
             try:
                 db.session.commit()
@@ -72,7 +72,7 @@ def index(action, idr):
         return redirect(url_for('.index'))
 
     elif action == '1':
-    # action = 1 = supprimer l'alarme de l'id passe en arg
+    # action = 1 delete alarm by id (idr)
         alarmedel = Alarm.query.filter(Alarm.id == idr).first()
         db.session.delete(alarmedel)
         removecron(idr)
@@ -81,9 +81,9 @@ def index(action, idr):
         return redirect(url_for('.index'))
     
     elif action == '2':
-    # retourne la page en edition avec l'alarme de l'id recu
-        alarmeedit = Alarm.query.filter(Alarm.id == idr).first()
-        form = addAlarmForm(obj=alarmeedit)
+    # edit alarm by id (idr)
+        alarmeedit  = Alarm.query.filter(Alarm.id == idr).first()
+        form        = addAlarmForm(obj=alarmeedit)
         return render_template("alarm/alarm.html",
              form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
     
