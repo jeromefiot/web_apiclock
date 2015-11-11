@@ -1,19 +1,18 @@
+import os, sys, time
+
 from crontab import CronTab
 from mpd import MPDClient
 from threading import Thread
-import time
-import datetime
-import os, sys
+
 from . import db, login_manager
 from .models import Alarm, Music
 
 
 #get current environment variable for crontab commands
-env_path = os.environ['VIRTUAL_ENV']
-script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+env_path     = os.environ['VIRTUAL_ENV']
+script_path  = os.path.dirname(os.path.realpath(sys.argv[0]))
 cron_command = env_path + '/bin/python ' + script_path + '/mpdplay.py'
-
-newcron = CronTab(user=True)
+newcron      = CronTab(user=True)
 
 
 class Snooze(Thread):
@@ -22,27 +21,26 @@ class Snooze(Thread):
         Thread.__init__(self)
         self.radio = radiosnooze
         self.duree = minutessnooze*60
-        client = MPDClient()
+        client     = MPDClient()
 
     def run(self):
-        """lance jouerMPD patiente le temps minutesnooze puis stop MDP"""
+        """start jouerMPD stop during minutesnooze then stop MPD"""
         jouerMPD(self.radio)
-        #fin = time.time() + self.duree # l'heure actuelle + duree (en secondes depuis epoch)
-        print self.duree
         time.sleep(self.duree)
         stopMPD()
 
 
 def addcronenvoi(monalarme):
-    """ transform and add alarm in crontab with a duration of 1h"""
-    testduree = int(monalarme['heure'])+2
+    """ transform and add alarm in crontab with a 2h duration"""
+    alarmduration = int(monalarme['heure'])+2
 
     job = newcron.new(command=cron_command + ' ' + monalarme['path'],
-        comment='Alarme ID:' + str(monalarme['id']))
+                      comment='Alarme ID:' + str(monalarme['id']))
     jours = ",".join(map(str, monalarme['jours']))
     job.setall(
         monalarme['minute'],
-        str(monalarme['heure'])+'-'+str(testduree),
+        "{}-{}".format(monalarme['heure'], alarmduration),
+        #str(monalarme['heure'])+'-'+str(alarmduration),
         '*',
         '*',
         jours)
@@ -61,37 +59,36 @@ def removecron(idalarm):
 
 
 def statealarm(idalarm):
-    """Find the existing alarm by id in comment of crontable and activate or deactivate it """
+    """Find the existing alarm by id in crontab comment and activate or deactivate it """
     actionalarm = newcron.find_comment('Alarme ID:'+str(idalarm))
     actionalarm = next(actionalarm)
-    alarms = Alarm.query.filter(Alarm.id==idalarm).first()
-    print alarms.state
-    
-    if alarms.state == True:    
+    alarms      = Alarm.query.filter(Alarm.id==idalarm).first()
+
+    if alarms.state == True:
         alarms.state = 0
         actionalarm.enable(False)
-        db.session.commit()
     else :
         alarms.state = 1
         actionalarm.enable(True)
-        db.session.commit()
+
+    db.session.commit()
 
 
 def getpodcasts():
-    """Get all podcats for the current_user podcast-show"""
+    """Get all emissions for the current_user podcast"""
     podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
     listepodcast = []
-    #Get URL of all emissions off the podcast  
+    #Get URL of all emissions off the podcast
     for emission in podcasts:
-        d = feedparser.parse(emission.url)
-        emissions=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
+        d         = feedparser.parse(emission.url)
+        emissions =[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
         listepodcast.append(emissions)
     return listepodcast
 
 def jouerMPD(path ='http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3'):
-    """ joue mpd avec url en playlist  """
-    client = MPDClient()               # create client object
-    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+    """ play mpd with url playlist in arg """
+    client             = MPDClient()   # create client object
+    client.timeout     = 10            # network timeout in seconds (floats allowed), default: None
     client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
     client.connect("localhost", 6600)  # connect to localhost:6600
     client.clear()
@@ -99,7 +96,7 @@ def jouerMPD(path ='http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp
     client.play()
 
 def stopMPD():
-    """  stop MPD """
+    """ Stop MPD """
     client = MPDClient()               # create client object
     client.connect("localhost", 6600)  # connect to localhost:6600
     client.clear()
@@ -109,6 +106,6 @@ def stopMPD():
 
 
 def snooze(radiosnooze, minutessnooze):
-    """cree un thread Snooze et le lance"""
+    """Create a Snooze thread and start it"""
     thr_snooze = Snooze(radiosnooze, minutessnooze)
     thr_snooze.start()
