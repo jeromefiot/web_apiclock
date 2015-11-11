@@ -7,7 +7,7 @@ import feedparser
 from . import alarm
 from .forms import addAlarmForm, addAlarmForm2
 from .. import db
-from ..models import Role, User, Alarm, Music
+from ..models import Alarm, Music
 from ..functions import addcronenvoi, removecron, statealarm
 from ..decorators import admin_required
 

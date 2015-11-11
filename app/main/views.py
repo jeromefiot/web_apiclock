@@ -1,19 +1,16 @@
 # coding: utf-8
+import subprocess, os, datetime
 
-from flask import render_template, redirect, url_for, abort, flash, request, send_from_directory
+from flask import render_template, redirect, url_for, flash, request
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Mail, Message
 from sqlalchemy.sql import and_
 from crontab import CronTab
 from mpd import MPDClient
 from threading import Thread
-import os, pickle
-import subprocess
-import datetime
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm,\
-    snoozeForm
+from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm, snoozeForm
 from .. import db, mail
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
@@ -121,9 +118,9 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     alarms = Alarm.query.filter_by(users=current_user.id).all()
         
     # load todo list and search for today todo
-    f = open('/home/pi/apiclock/admin.txt', 'r')
-    data1 = f.readlines()
-    today = datetime.datetime.now().strftime('%d-%m-%y')
+    f           = open('/home/pi/apiclock/admin.txt', 'r')
+    data1       = f.readlines()
+    today       = datetime.datetime.now().strftime('%d-%m-%y')
     listedujour = []
     for element in data1:
         if element[-9:-1] == today:
@@ -132,14 +129,14 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         else : 
             pass
     
-    form1 = playerForm(prefix="form1")
-    formsnooze = snoozeForm()
+    form1       = playerForm(prefix="form1")
+    formsnooze  = snoozeForm()
     
     if formsnooze.submitsnooze.data:
         """recup radio par id et retourne url a jouerMPD()"""
-        radiosnooze = formsnooze.radiosnooze.data
-        radiosnooze = Music.query.filter(Music.id==radiosnooze).first()
-        radiosnooze = radiosnooze.url
+        radiosnooze   = formsnooze.radiosnooze.data
+        radiosnooze   = Music.query.filter(Music.id == radiosnooze).first()
+        radiosnooze   = radiosnooze.url
         minutessnooze = int(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
         return redirect(url_for('.dashboard'))
@@ -182,16 +179,19 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
 @login_required
 def edit_profile():
     form = EditProfileForm()
+
     if form.validate_on_submit():
-        current_user.name = form.name.data
+        current_user.name     = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
-    form.name.data = current_user.name
-    form.location.data = current_user.location
-    form.about_me.data = current_user.about_me
+
+    form.name.data      = current_user.name
+    form.location.data  = current_user.location
+    form.about_me.data  = current_user.about_me
+
     return render_template('edit_profile.html', form=form)
 
 
@@ -201,24 +201,26 @@ def edit_profile():
 def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
+
     if form.validate_on_submit():
-        user.email = form.email.data
-        user.username = form.username.data
-        user.confirmed = form.confirmed.data
-        user.role = Role.query.get(form.role.data)
-        user.name = form.name.data
-        user.location = form.location.data
-        user.about_me = form.about_me.data
+        user.email      = form.email.data
+        user.username   = form.username.data
+        user.confirmed  = form.confirmed.data
+        user.role       = Role.query.get(form.role.data)
+        user.name       = form.name.data
+        user.location   = form.location.data
+        user.about_me   = form.about_me.data
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
-    form.email.data = user.email
-    form.username.data = user.username
+
+    form.email.data     = user.email
+    form.username.data  = user.username
     form.confirmed.data = user.confirmed
-    form.role.data = user.role_id
-    form.name.data = user.name
-    form.location.data = user.location
-    form.about_me.data = user.about_me
+    form.role.data      = user.role_id
+    form.name.data      = user.name
+    form.location.data  = user.location
+    form.about_me.data  = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
 
 
@@ -228,10 +230,8 @@ def edit_profile_admin(id):
 def users():
     user = User.query.all()
     if request.args.get('id'):
-        print 'yes'
         userid = request.args.get('id')
-        print userid
-        userd = User.query.filter(User.id==userid).first()
+        userd  = User.query.filter(User.id==userid).first()
         db.session.delete(userd)
         db.session.commit()
         flash('The user has been deleted.')
@@ -244,7 +244,7 @@ def users():
 @admin_required
 def diskutil():
     commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
-    retour = commande.stdout.readlines()
+    retour   = commande.stdout.readlines()
     
     return render_template('/admin/diskutil.html', test=retour)
 
@@ -254,11 +254,10 @@ def diskutil():
 @login_required
 @admin_required
 def admin_stuff(idline='0'):
-    form = addAdmin()
-    
-    f = open('/home/pi/apiclock/admin.txt', 'r')
+    form  = addAdmin()
+    f     = open('/home/pi/apiclock/admin.txt', 'r')
     data1 = f.readlines()
-    data = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
+    data  = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
     today = datetime.datetime.now().strftime('%d-%m-%y')
     
     if form.validate_on_submit():
