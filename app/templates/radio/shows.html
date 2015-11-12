@@ -20,9 +20,9 @@
         <tr>
             <td> {{ show[0] }}</td>
             <td>
-                <a href="{{ url_for('radio.local', radio=show[1]) }}" 
+                <a href="{{ url_for('radio.local', radio=show[1]) }}"
                     class="btn btn-primary btn-sm active" role="button"> Jouer en local </a>
-                <a href="{{ url_for('radio.distant', radio=show[1]) }}" 
+                <a href="{{ url_for('radio.distant', radio=show[1]) }}"
                     class="btn btn-primary btn-sm active" role="button"> Jouer en distant </a>
                 <a href="{{ url_for('radio.podcast', action='donwload', urlpodcast=show[1], nompodcast=show[0]) }}"
                     class="btn btn-default btn-sm active" role="button"> Télécharger </a>
