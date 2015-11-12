@@ -17,16 +17,10 @@ from ..functions import jouerMPD
 @login_required
 @admin_required
 def index(action, radioe):
-<<<<<<< HEAD
-    radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
-    form  = AddMusicForm()
-    form2 = PlayRadio()
-=======
+
     radio  = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
     form   = AddMusicForm()
     form2  = PlayRadio()
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
-    
     client = MPDClient()
     client.connect("localhost", 6600)
     

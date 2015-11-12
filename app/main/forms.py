@@ -45,17 +45,11 @@ class playerForm(Form):
         self.radio.choices = [(g.id, g.name) for g in
                               Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()]
         self.music.choices = [(g.id, g.name) for g in
-<<<<<<< HEAD
-            Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
+                              Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
         podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
         lemissions = []
         #get all url for emissions of a podcast 
-=======
-                              Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
-        podcasts    = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-        lemissions  = []
-        #recup pour chaque podcast les url de ts les emissions
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
+
         for emission in podcasts:
             d = feedparser.parse(emission.url)
             emissions=[(d.entries[i].enclosures[0]['href'],emission.name+' - '+d.entries[i]['title']) for i,j in enumerate(d.entries)]
@@ -77,7 +71,6 @@ class EditProfileForm(Form):
 
 
 class EditProfileAdminForm(Form):
-<<<<<<< HEAD
     email      = StringField('Email', validators=[Required(), Length(1, 64),
                                              Email()])
     username   = StringField('Username', validators=[
@@ -90,20 +83,6 @@ class EditProfileAdminForm(Form):
     location   = StringField('Location', validators=[Length(0, 64)])
     about_me   = TextAreaField('About me')
     submit     = SubmitField('Submit')
-=======
-    email     = StringField('Email', validators=[Required(), Length(1, 64),
-                                                Email()])
-    username  = StringField('Username', validators=[Required(), Length(1, 64),
-                                                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                                           'Usernames must have only letters, '
-                                                           'numbers, dots or underscores')])
-    confirmed = BooleanField('Confirmed')
-    role      = SelectField('Role', coerce=int)
-    name      = StringField('Real name', validators=[Length(0, 64)])
-    location  = StringField('Location', validators=[Length(0, 64)])
-    about_me  = TextAreaField('About me')
-    submit    = SubmitField('Submit')
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
 
     def __init__(self, user, *args, **kwargs):
         super(EditProfileAdminForm, self).__init__(*args, **kwargs)

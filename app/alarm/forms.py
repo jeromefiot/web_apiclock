@@ -11,39 +11,7 @@ from ..models import Music, getradios
 
 
 class addAlarmForm(Form):
-<<<<<<< HEAD
-    name        = StringField('Nom', validators=[Length(1, 120)])
-    state       = BooleanField('Active')
-    # duration = SelectField('Duree', choices=[('5', '5 mn'), ('10', '10 mn'),
-        # ('15', '15 mn'), ('20', '20 mn'), ('30', '30 mn'), ('45', '45 mn'), ('59', '1 h')])
-    Radio       = QuerySelectField('Radios', query_factory=getradios, get_label='name')
-    heures      = IntegerField('Heures', validators=[NumberRange(min=0, max=23)])
-    minutes     = IntegerField('Minutes', validators=[NumberRange(min=0, max=59)])
-    repetition  = RadioField('List', choices=[('Repeter ? ', 'Repeter l\'alarme')])
-    jours = SelectMultipleField('jours', choices=[('1', 'Lundi'),
-        ('2', 'Mardi'), ('3', 'Mercredi'), ('4', 'Jeudi'), ('5', 'Vendredi'),
-        ('6', 'Samedi'), ('0', 'Dimanche')], validators=[Required()])
-    submit      = SubmitField('valider')
-    
 
-class addAlarmForm2(Form):
-    name        = StringField('Nom', validators=[Length(1, 120)])
-    state       = BooleanField('Active')
-    # duration = SelectField('Duree', choices=[('5', '5 mn'), ('10', '10 mn'),
-        # ('15', '15 mn'), ('20', '20 mn'), ('30', '30 mn'), ('45', '45 mn'), ('59', '1 h')])
-    media       = SelectField('', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
-    radio       = SelectField('')
-    podcast     = SelectField('')
-    music       = SelectField('')
-    heures      = IntegerField('Heures', validators=[NumberRange(min=0, max=23)])
-    minutes     = IntegerField('Minutes', validators=[NumberRange(min=0, max=59)])
-    repetition  = RadioField('List', choices=[('Repeter ? ',
-    'Repeter l\'alarme')])
-    jours       = SelectMultipleField('jours', choices=[('1', 'Lundi'),
-        ('2', 'Mardi'), ('3', 'Mercredi'), ('4', 'Jeudi'), ('5', 'Vendredi'),
-        ('6', 'Samedi'), ('0', 'Dimanche')], validators=[Required()])
-    submit      = SubmitField('valider')
-=======
     name       = StringField('Nom', validators=[Length(1, 120)])
     state      = BooleanField('Active')
     # duration = SelectField('Duree', choices=[('5', '5 mn'), ('10', '10 mn'),
@@ -77,7 +45,6 @@ class addAlarmForm2(Form):
                                                        ('0', 'Dimanche')],
                                         validators=[Required()])
     submit     = SubmitField('Valider')
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     
     def __init__(self, *args, **kwargs):
         super(addAlarmForm2, self).__init__(*args, **kwargs)

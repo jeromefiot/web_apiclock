@@ -134,15 +134,9 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     formsnooze  = snoozeForm()
     
     if formsnooze.submitsnooze.data:
-<<<<<<< HEAD
         """Get radio by id and return url for jouerMPD()"""
         radiosnooze   = formsnooze.radiosnooze.data
         radiosnooze   = Music.query.filter(Music.id==radiosnooze).first()
-=======
-        """recup radio par id et retourne url a jouerMPD()"""
-        radiosnooze   = formsnooze.radiosnooze.data
-        radiosnooze   = Music.query.filter(Music.id == radiosnooze).first()
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
         radiosnooze   = radiosnooze.url
         minutessnooze = int(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
@@ -195,11 +189,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
 @login_required
 def edit_profile():
     form = EditProfileForm()
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     if form.validate_on_submit():
         current_user.name     = form.name.data
         current_user.location = form.location.data
@@ -207,18 +197,11 @@ def edit_profile():
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
-<<<<<<< HEAD
-    
-    form.name.data     = current_user.name
-    form.location.data = current_user.location
-    form.about_me.data = current_user.about_me
-=======
 
     form.name.data      = current_user.name
     form.location.data  = current_user.location
     form.about_me.data  = current_user.about_me
 
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     return render_template('edit_profile.html', form=form)
 
 
@@ -228,21 +211,6 @@ def edit_profile():
 def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
-<<<<<<< HEAD
-    
-    if form.validate_on_submit():
-        user.email     = form.email.data
-        user.username  = form.username.data
-        user.confirmed = form.confirmed.data
-        user.role      = Role.query.get(form.role.data)
-        user.name      = form.name.data
-        user.location  = form.location.data
-        user.about_me  = form.about_me.data
-        db.session.add(user)
-        flash('The profile has been updated.')
-        return redirect(url_for('.user', username=user.username))
-    
-=======
 
     if form.validate_on_submit():
         user.email      = form.email.data
@@ -256,7 +224,6 @@ def edit_profile_admin(id):
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
 
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     form.email.data     = user.email
     form.username.data  = user.username
     form.confirmed.data = user.confirmed
@@ -288,13 +255,10 @@ def users():
 def diskutil():
     commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
     retour   = commande.stdout.readlines()
-<<<<<<< HEAD
     
     commande = subprocess.Popen("du -h ./app/static/musique",stdout=subprocess.PIPE,shell=True)
     retour2  = commande.stdout.readlines()
-=======
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
-    
+
     return render_template('/admin/diskutil.html', test=retour, test2=retour2)
 
 
@@ -303,12 +267,7 @@ def diskutil():
 @login_required
 @admin_required
 def admin_stuff(idline='0'):
-<<<<<<< HEAD
-    form = addAdmin()
-    
-=======
     form  = addAdmin()
->>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     f     = open('/home/pi/apiclock/admin.txt', 'r')
     data1 = f.readlines()
     data  = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
