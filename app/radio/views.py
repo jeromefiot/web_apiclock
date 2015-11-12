@@ -1,6 +1,6 @@
-import urllib, feedparser
+import urllib, feedparser, os
 
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, current_app
 from flask.ext.login import login_required, current_user
 from sqlalchemy.sql import and_
 from mpd import MPDClient
@@ -11,6 +11,7 @@ from .. import db
 from ..models import User, Music
 from ..decorators import admin_required
 from ..functions import jouerMPD
+
 
 @radio.route('/', methods=['GET', 'POST'], defaults = {'action':0, 'radioe':0})
 @radio.route('/<int:action>/<int:radioe>', methods=['GET', 'POST'])
@@ -40,11 +41,7 @@ def index(action, radioe):
         # if Feed (podcast) added then redirect to linked shows
         url =form.url.data
         d   = feedparser.parse(url)
-        #podcast = d['feed']["image"]["url"]
-        #podcast = Podcast(titre=d['feed']["subtitle"],
-        #                  lien=d['feed']["link"],
-        #                  img=d['feed']["url"]
-        #                 )
+
         podcast = Music(name     =form.name.data,
                       url        =form.url.data,
                       img        =d['feed']["image"]["url"],
@@ -58,11 +55,13 @@ def index(action, radioe):
         return render_template('radio/shows.html', podcast=form.name.data)
     
     elif action is 1 and radioe is not 0 :
-        """ action = 1 > SUPPRESSION de la radio ayant l'id radio passe par le param radioe """
+        """ action = 1 > Remove media which id = radioe """
         radiodel = Music.query.filter(Music.id==radioe).first()
         db.session.delete(radiodel)
         db.session.commit()
-        flash('Radio has been deleted')
+        if radiodel.music_type == 3:
+            os.remove(current_app.config['UPLOAD_FOLDER']+name)
+        flash('Delete successful !')
         return redirect(url_for('.index'))
     
     elif action is 2 :
@@ -107,7 +106,6 @@ def edit(radioedit):
 @admin_required
 def podcast(action):
     """ Display podcasts subscription list for current user"""
-    
     podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
         
     if action == "unsubscribe":
@@ -122,13 +120,27 @@ def podcast(action):
         idmusic = request.args.get('music_id')
         podcast = Music.query.filter(Music.id==idmusic).first()
         d       = feedparser.parse(podcast.url)
-        shows   =[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
+        shows   = [(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
         return render_template('radio/shows.html', shows=shows, titre=podcast.name)
     
     elif action == "donwload":
-        urlmusic    = request.args.get('urlpodcast')
-        nompodcast  = request.args.get('nompodcast')
-        urllib.urlretrieve(urlmusic, "/home/pi/apiclock/app/static/podcast/"+nompodcast)
+        """ Download podcast as music type media in music directory """
+        up_dir        = current_app.config['UPLOAD_FOLDER']
+        urlmusic      = request.args.get('urlpodcast')
+        name_podcast  = request.args.get('nompodcast')
+        print up_dir
+        try:
+            stock_music = urllib.urlretrieve(urlmusic, up_dir+name_podcast)
+            # TO ADD : check the disk space
+            podcast = Music(name     = name_podcast,
+                          url        = up_dir+name_podcast+'.mp3',
+                          music_type = '3',
+                          users      = current_user.id)
+            db.session.add(podcast)
+            db.session.commit()
+            flash('Your podcast has been download in your Music')
+        except:
+                flash('Error adding your podcast to your music')
         return redirect(url_for('.podcast'))
     
     return render_template('radio/podcast.html', podcasts=podcasts)
@@ -141,7 +153,7 @@ def music():
     musics = Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()
         
     return render_template('radio/music.html', radios=musics)
-
+    
     
 @radio.route('/local/<path:radio>')
 @login_required

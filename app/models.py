@@ -34,22 +34,22 @@ class Alarm(db.Model):
 
 class Music(db.Model):
     __tablename__ = 'musics'
-    id          = db.Column(db.Integer, primary_key=True)
-    name        = db.Column(db.String(64), unique=True)
-    url         = db.Column(db.String(64), unique=True)
-    img         = db.Column(db.String(64), unique=True)
-    description = db.Column(db.Text())
-    music_type  = db.Column(db.String(64))
-    users       = db.Column(db.Integer)
+    id            = db.Column(db.Integer, primary_key=True)
+    name          = db.Column(db.String(64), unique=True)
+    url           = db.Column(db.String(64), unique=True)
+    img           = db.Column(db.String(64), unique=True)
+    description   = db.Column(db.Text())
+    music_type    = db.Column(db.String(64))
+    users         = db.Column(db.Integer)
 
 
 class Role(db.Model):
     __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    name        = db.Column(db.String(64), unique=True)
-    default     = db.Column(db.Boolean, default=False, index=True)
-    permissions = db.Column(db.Integer)
-    users       = db.relationship('User', backref='role', lazy='dynamic')
+    id            = db.Column(db.Integer, primary_key=True)
+    name          = db.Column(db.String(64), unique=True)
+    default       = db.Column(db.Boolean, default=False, index=True)
+    permissions   = db.Column(db.Integer)
+    users         = db.relationship('User', backref='role', lazy='dynamic')
 
     @staticmethod
     def insert_roles():
@@ -68,7 +68,7 @@ class Role(db.Model):
             if role is None:
                 role = Role(name=r)
             role.permissions = roles[r][0]
-            role.default = roles[r][1]
+            role.default     = roles[r][1]
             db.session.add(role)
         db.session.commit()
 
@@ -78,7 +78,7 @@ class Role(db.Model):
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
+    id            = db.Column(db.Integer, primary_key=True)
     email         = db.Column(db.String(64), unique=True, index=True)
     username      = db.Column(db.String(64), unique=True, index=True)
     role_id       = db.Column(db.Integer, db.ForeignKey('roles.id'))

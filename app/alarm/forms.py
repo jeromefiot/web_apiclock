@@ -1,6 +1,7 @@
 import feedparser
 
 from flask.ext.wtf import Form
+from flask.ext.login import login_required, current_user
 from wtforms import SubmitField, SelectMultipleField, IntegerField, \
     SelectField, StringField, RadioField, BooleanField
 from wtforms.validators import Required, NumberRange, Length

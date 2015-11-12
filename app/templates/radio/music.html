@@ -19,11 +19,12 @@
                 <tr>
                     <td>{{ radio.name }}</td>
                     <td>
-                        <a href="{{url_for('radio.local', radio=radio.url)}}" class="btn btn-default btn-sm active" role="button">Local</a>
-                        <a href="{{url_for('radio.distant', radio=radio.url)}}" class="btn btn-primary btn-sm active" role="button">Distant</a>
+                        <a href="{{url_for('radio.local', radio=radio.url)}}" 
+                            class="btn btn-default btn-sm active" role="button">Local</a>
+                        <a href="{{url_for('radio.distant', radio=radio.url)}}" 
+                            class="btn btn-primary btn-sm active" role="button">Distant</a>
                     </td>
                     <td>
-                        <a href="{{url_for('radio.edit', radioedit=radio.id)}}" class="btn btn-default btn-sm active" role="button">Editer</a>
                         <a href="{{url_for('radio.index', action='1', radioe=radio.id)}}"
                            class="btn btn-danger btn-sm active" role="button">Supprimer </a>
                     </td>
