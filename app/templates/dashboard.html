@@ -32,13 +32,7 @@
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="form1-podcasts"><label class="control-label" for="form1-podcast">{{ form1.podcast.label }}</label>
-            <select class="form-control" id="form1-podcast" name="form1-podcast">
-            {% for podcast in form1.podcast.choices %}
-                <option value="{{podcast[0]}}">{{ podcast[1] }}</option>
-            {% endfor %}
-            </select>
-        </div>
+
         <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form1.music.label }}</label>
             <select class="form-control" id="form1-music" name="form1-music">
                 {% for music in form1.music.choices %}

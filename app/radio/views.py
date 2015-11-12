@@ -10,7 +10,7 @@ from .forms import AddMusicForm, PlayRadio
 from .. import db
 from ..models import User, Music
 from ..decorators import admin_required
-from ..functions import jouerMPD
+from ..functions import jouerMPD, stopMPD
 
 
 @radio.route('/', methods=['GET', 'POST'], defaults = {'action':0, 'radioe':0})
@@ -125,15 +125,14 @@ def podcast(action):
     
     elif action == "donwload":
         """ Download podcast as music type media in music directory """
-        up_dir        = current_app.config['UPLOAD_FOLDER']
+        up_dir        = "/home/pi/apiclock/app/static/musique/"
         urlmusic      = request.args.get('urlpodcast')
-        name_podcast  = request.args.get('nompodcast')
-        print up_dir
+        name_podcast  = 'PODCAST_'+request.args.get('nompodcast')
         try:
             stock_music = urllib.urlretrieve(urlmusic, up_dir+name_podcast)
             # TO ADD : check the disk space
             podcast = Music(name     = name_podcast,
-                          url        = up_dir+name_podcast+'.mp3',
+                          url        = "http://jeromefiot.fr/static/musique/"+name_podcast,
                           music_type = '3',
                           users      = current_user.id)
             db.session.add(podcast)
@@ -168,10 +167,7 @@ def local(radio):
 def distant(radio):
     
     if radio == 'stop':
-        client = MPDClient() 
-        client.connect("localhost", 6600)
-        client.clear()
-        client.stop()
+        stopMPD()
         return redirect(url_for('.index'))
         
     jouerMPD(radio)

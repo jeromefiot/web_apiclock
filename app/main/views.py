@@ -144,16 +144,17 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     
     elif form1.submit.data:
         """depending on media type get id and then request for url"""
-        if form1.radio.data :
-            mediatype = form1.radio.data
+        if form1.media.data == "1" :
+            mediaid = form1.radio.data
         #elif form1.podcast.data :
         #    mediatype = form1.podcast.data
         #    podcast = Music.query.filter(Music.id==mediatype).first()
             #d = feedparser.parse(podcast.url)
             #shows=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
         else :
-            mediatype = form1.music.data
-        media = Music.query.filter(Music.id==mediatype).first()
+            mediaid = form1.music.data
+        media = Music.query.filter(Music.id==mediaid).first()
+        print media.url
         jouerMPD(media.url)
         return redirect(url_for('.dashboard'))
     

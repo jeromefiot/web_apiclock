@@ -34,9 +34,10 @@ class ContactForm(Form):
 
 
 class playerForm(Form):
-    media   = SelectField('', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
+    #media   = SelectField('', choices=[('1','Radio'),('2','Podcast'),('3','Musique')])
+    media   = SelectField('', choices=[('1','Radio'),('3','Musique')])
     radio   = SelectField('')
-    podcast = SelectField('')
+    #podcast = SelectField('')
     music   = SelectField('')
     submit  = SubmitField('Jouer')
 
@@ -46,15 +47,15 @@ class playerForm(Form):
                               Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()]
         self.music.choices = [(g.id, g.name) for g in
                               Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
-        podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-        lemissions = []
-        #get all url for emissions of a podcast 
-
-        for emission in podcasts:
-            d = feedparser.parse(emission.url)
-            emissions=[(d.entries[i].enclosures[0]['href'],emission.name+' - '+d.entries[i]['title']) for i,j in enumerate(d.entries)]
-            lemissions.extend(emissions)
-        self.podcast.choices = lemissions
+        #podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
+        #lemissions = []
+        ##get all url for emissions of a podcast 
+        #
+        #for emission in podcasts:
+        #    d = feedparser.parse(emission.url)
+        #    emissions=[(d.entries[i].enclosures[0]['href'],emission.name+' - '+d.entries[i]['title']) for i,j in enumerate(d.entries)]
+        #    lemissions.extend(emissions)
+        #self.podcast.choices = lemissions
 
 
 class addAdmin(Form):

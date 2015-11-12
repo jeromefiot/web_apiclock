@@ -17,7 +17,7 @@
             <tbody>
                 {% for radio in radios %}
                 <tr>
-                    <td>{{ radio.name }}</td>
+                    <td>{{ radio.name }} </td>
                     <td>
                         <a href="{{url_for('radio.local', radio=radio.url)}}" 
                             class="btn btn-default btn-sm active" role="button">Local</a>
