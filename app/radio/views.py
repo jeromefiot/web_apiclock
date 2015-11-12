@@ -1,10 +1,9 @@
+import urllib, feedparser
+
 from flask import render_template, redirect, request, url_for, flash
 from flask.ext.login import login_required, current_user
 from sqlalchemy.sql import and_
 from mpd import MPDClient
-import os.path
-import urllib
-import feedparser
 
 from . import radio
 from .forms import AddMusicForm, PlayRadio
@@ -18,20 +17,26 @@ from ..functions import jouerMPD
 @login_required
 @admin_required
 def index(action, radioe):
+<<<<<<< HEAD
     radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
     form  = AddMusicForm()
     form2 = PlayRadio()
+=======
+    radio  = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
+    form   = AddMusicForm()
+    form2  = PlayRadio()
+>>>>>>> f2bbad906243270e587ab60ca31f216bee349296
     
     client = MPDClient()
     client.connect("localhost", 6600)
     
     if form.validate_on_submit() and form.music_type.data=='1':
         # if Radio type added insert radio in bdd
-        radio = Music(name=form.name.data,
-                      url=form.url.data,
+        radio = Music(name       =form.name.data,
+                      url        =form.url.data,
                       description=form.description.data,
-                      music_type=form.music_type.data,
-                      users=current_user.id)
+                      music_type =form.music_type.data,
+                      users      =current_user.id)
         db.session.add(radio)
         db.session.commit()
         flash('Radio has been added.')
@@ -39,19 +44,19 @@ def index(action, radioe):
     
     elif form.validate_on_submit() and form.music_type.data=='2':
         # if Feed (podcast) added then redirect to linked shows
-        url=form.url.data
-        d = feedparser.parse(url)
+        url =form.url.data
+        d   = feedparser.parse(url)
         #podcast = d['feed']["image"]["url"]
         #podcast = Podcast(titre=d['feed']["subtitle"],
         #                  lien=d['feed']["link"],
         #                  img=d['feed']["url"]
         #                 )
-        podcast = Music(name=form.name.data,
-                      url=form.url.data,
-                      img=d['feed']["image"]["url"],
+        podcast = Music(name     =form.name.data,
+                      url        =form.url.data,
+                      img        =d['feed']["image"]["url"],
                       description=form.description.data,
-                      music_type=form.music_type.data,
-                      users=current_user.id)
+                      music_type =form.music_type.data,
+                      users      =current_user.id)
         db.session.add(podcast)
         db.session.commit()
         
@@ -86,19 +91,19 @@ def index(action, radioe):
 @admin_required
 def edit(radioedit):
     radioe = Music.query.filter(Music.id==radioedit).first()
-    radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
-    form = AddMusicForm()
+    radio  = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
+    form   = AddMusicForm()
     
     if form.validate_on_submit():
-        radioe.name=form.name.data
-        radioe.url=form.url.data
-        radioe.description=form.description.data
+        radioe.name         = form.name.data
+        radioe.url          = form.url.data
+        radioe.description  = form.description.data
         db.session.add(radioe)
         flash('Radio has been updated')
         
-    form.name.data=radioe.name
-    form.url.data=radioe.url
-    form.description.data=radioe.description
+    form.name.data       = radioe.name
+    form.url.data        = radioe.url
+    form.description.data= radioe.description
     return render_template('radio/radio.html', form=form, radios=radio)
 
 
@@ -122,13 +127,13 @@ def podcast(action):
     elif action == "show":
         idmusic = request.args.get('music_id')
         podcast = Music.query.filter(Music.id==idmusic).first()
-        d = feedparser.parse(podcast.url)
-        shows=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
+        d       = feedparser.parse(podcast.url)
+        shows   =[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
         return render_template('radio/shows.html', shows=shows, titre=podcast.name)
     
     elif action == "donwload":
-        urlmusic = request.args.get('urlpodcast')
-        nompodcast = request.args.get('nompodcast')
+        urlmusic    = request.args.get('urlpodcast')
+        nompodcast  = request.args.get('nompodcast')
         urllib.urlretrieve(urlmusic, "/home/pi/apiclock/app/static/podcast/"+nompodcast)
         return redirect(url_for('.podcast'))
     
