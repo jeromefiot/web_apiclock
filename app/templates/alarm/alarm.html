@@ -28,9 +28,12 @@
     <form action="" method="post" class="form" role="form">
         {{ form2.hidden_tag() }}
         
-        <div class="form-group" id="form1-name"><label class="control-label" for="form1-name">{{ form2.name.label }}</label>
-            {{ form2.name }}
-        </div>
+        {{ wtf.form_field(form2.name) }}
+        {{ wtf.form_field(form2.state) }}
+        {{ wtf.form_field(form2.heures) }}
+        {{ wtf.form_field(form2.minutes) }}
+        {{ wtf.form_field(form2.repetition) }}
+        {{ wtf.form_field(form2.jours) }}
         
         <div class="form-group" id="form1-medias"><label class="control-label" for="form1-media">{{ form2.media.label }}</label>
             <select class="form-control" id="form1-media" name="form1-media">
@@ -60,7 +63,7 @@
                 {% endfor %}
             </select>
         </div>
-        <input class="btn btn-default" id="form1-submit" name="form1-submit" type="submit" value="Jouer">
+        {{ wtf.form_field(form2.submit) }}
     </form>
 
 <hr>

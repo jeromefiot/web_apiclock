@@ -50,6 +50,7 @@
     </form>
 </div>
 
+
 <!--
 <div class="col-md-4">
     <h2>SNOOZE2</h2>
@@ -92,13 +93,12 @@
     {% for alarm in alarms %}
         {{alarm.namealarme}}  //  {{alarm.days}} - {{alarm.startdate}} <br/>
     {% endfor %}
-    
 </div>
 
 
 <div class="row" style="margin:2px;">
-    <div class="col-md-8">
-        <h2>TODO of the DAY</h2>
+    <div class="col-md-8" style="margin-top:20px;">
+        <h2>TODO</h2>
         <br/>
         {% for element in listedujour %}
             {{element}} <br/>

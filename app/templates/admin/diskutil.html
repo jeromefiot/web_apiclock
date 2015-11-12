@@ -22,5 +22,24 @@
         </tbody>
     </table>
 </div>
+<br/><br/>
+
+<h1>DISK FREE : {{ (test2[0].split())[0] }} </h1>
+<!-- get the total of differents free spaces -->
+<br/>
+<div>
+    <table class="table table-striped">
+    <!--        get the line from the command-line bloc result and split it in the tabble  -->
+        <tbody>
+            {% for line in test2 %}
+            <tr>
+                {% set line1 = line.split() %}
+                    <td><strong>{{ line1[1] }}</strong></td>
+                    <td>{{ line1[0] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

@@ -43,7 +43,6 @@
     //]]>
 </script>
 
-
 {% endblock %}
 
 {% block navbar %}
@@ -58,8 +57,11 @@
             </button>
             
 <!--      AFFICHAGE PUBLIC          -->
-
-        <a class="navbar-brand" href="{{ url_for('main.index') }}">Jérôme FIOT</a>
+        {% if current_user.is_authenticated() %}
+            <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Jérôme FIOT</a>
+        {% else %}
+             <a class="navbar-brand" href="{{ url_for('main.index') }}">Jérôme FIOT</a>
+        {% endif %}
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -111,11 +113,12 @@
                 <li><a href="{{ url_for('alarm.index') }}">Alarme</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        Radio <b class="caret"></b>
+                        Médias <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for('radio.index') }}">Radios</a></li>
                         <li><a href="{{ url_for('radio.podcast', action='rien') }}">Podcasts</a></li>
+                        <li><a href="{{ url_for('radio.music') }}">Musique</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -143,9 +146,28 @@
     </div>
 </div>
 {% endblock %}
-
-
 {% block content %}
+
+    {% if request.path == "/" %}
+        <div id="myCarousel" class="carousel slide">
+            <div class="carousel-inner">
+                  <div class="item active"> 
+                    <div class="fill" style="background-image:url(http://jeromefiot.fr/static/img/ieps.jpg)"></div>
+                    <div class="carousel-caption">
+                        <p>
+                            <h3 style="background: #463265; height: 60px; line-height: 50px; padding-top:5px;">
+                                Besoin d'un expert digital ?
+                            </h3>
+                        </p>
+                        <p>
+                            <a class="btn btn-large btn-primary" href="mailto:j_fiot@hotmail.com">CONTACTEZ-MOI : +33(6).512.502.66</a>
+                        </p>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="container">
         {% for message in get_flashed_messages() %}
         <div class="alert alert-warning">

@@ -19,7 +19,7 @@ from ..functions import jouerMPD
 @admin_required
 def index(action, radioe):
     radio = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
-    form = AddMusicForm()
+    form  = AddMusicForm()
     form2 = PlayRadio()
     
     client = MPDClient()
@@ -134,7 +134,16 @@ def podcast(action):
     
     return render_template('radio/podcast.html', podcasts=podcasts)
 
+    
+@radio.route('/music', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def music():
+    musics = Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()
+        
+    return render_template('radio/music.html', radios=musics)
 
+    
 @radio.route('/local/<path:radio>')
 @login_required
 @admin_required

@@ -15,7 +15,7 @@ def before_request():
         current_user.ping()
         if not current_user.confirmed \
                 and request.endpoint[:5] != 'auth.' \
-                and request.endpoint != 'static':
+                and request.endpoint     != 'static':
             return redirect(url_for('auth.unconfirmed'))
 
 
@@ -49,6 +49,7 @@ def logout():
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
+    
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data,
@@ -143,7 +144,7 @@ def change_email_request():
     if form.validate_on_submit():
         if current_user.verify_password(form.password.data):
             new_email = form.email.data
-            token = current_user.generate_email_change_token(new_email)
+            token     = current_user.generate_email_change_token(new_email)
             send_email(new_email, 'Confirm your email address',
                        'auth/email/change_email',
                        user=current_user, token=token)

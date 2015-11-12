@@ -6,14 +6,15 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from config import config
 
-bootstrap = Bootstrap()
-mail = Mail()
-moment = Moment()
-db = SQLAlchemy()
 
-login_manager = LoginManager()
+bootstrap = Bootstrap()
+mail      = Mail()
+moment    = Moment()
+db        = SQLAlchemy()
+
+login_manager                    = LoginManager()
 login_manager.session_protection = 'strong'
-login_manager.login_view = 'auth.login'
+login_manager.login_view         = 'auth.login'
 
 
 def create_app(config_name):

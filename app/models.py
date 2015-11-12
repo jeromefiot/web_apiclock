@@ -11,45 +11,45 @@ from sqlalchemy.sql import and_
 
 
 class Permission:
-    FOLLOW = 0x01
-    COMMENT = 0x02
-    WRITE_ARTICLES = 0x04
+    FOLLOW            = 0x01
+    COMMENT           = 0x02
+    WRITE_ARTICLES    = 0x04
     MODERATE_COMMENTS = 0x08
-    ADMINISTER = 0x80
+    ADMINISTER        = 0x80
 
 
 class Alarm(db.Model):
     """ Alarms (add by cronjob for each user)
     """
     __tablename__ = 'alarm'
-    id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.Boolean(), default=True)
+    id         = db.Column(db.Integer, primary_key=True)
+    state      = db.Column(db.Boolean, default=True)
     namealarme = db.Column(db.String(120))
-    startdate = db.Column(db.String(64))
-    duration = db.Column(db.String(140))
-    frequence = db.Column(db.String(140))
-    days = db.Column(db.String(140))
-    users = db.Column(db.Integer)
+    startdate  = db.Column(db.String(64))
+    duration   = db.Column(db.String(140))
+    frequence  = db.Column(db.String(140))
+    days       = db.Column(db.String(140))
+    users      = db.Column(db.Integer)
 
 
 class Music(db.Model):
     __tablename__ = 'musics'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    url = db.Column(db.String(64), unique=True)
-    img = db.Column(db.String(64), unique=True)
+    id          = db.Column(db.Integer, primary_key=True)
+    name        = db.Column(db.String(64), unique=True)
+    url         = db.Column(db.String(64), unique=True)
+    img         = db.Column(db.String(64), unique=True)
     description = db.Column(db.Text())
-    music_type = db.Column(db.String(64))
-    users = db.Column(db.Integer)
+    music_type  = db.Column(db.String(64))
+    users       = db.Column(db.Integer)
 
 
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    default = db.Column(db.Boolean, default=False, index=True)
+    name        = db.Column(db.String(64), unique=True)
+    default     = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
-    users = db.relationship('User', backref='role', lazy='dynamic')
+    users       = db.relationship('User', backref='role', lazy='dynamic')
 
     @staticmethod
     def insert_roles():
@@ -79,17 +79,17 @@ class Role(db.Model):
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), unique=True, index=True)
-    username = db.Column(db.String(64), unique=True, index=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    email         = db.Column(db.String(64), unique=True, index=True)
+    username      = db.Column(db.String(64), unique=True, index=True)
+    role_id       = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
-    confirmed = db.Column(db.Boolean, default=False)
-    name = db.Column(db.String(64))
-    location = db.Column(db.String(64))
-    about_me = db.Column(db.Text())
-    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    avatar_hash = db.Column(db.String(32))
+    confirmed     = db.Column(db.Boolean, default=False)
+    name          = db.Column(db.String(64))
+    location      = db.Column(db.String(64))
+    about_me      = db.Column(db.Text())
+    member_since  = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen     = db.Column(db.DateTime(), default=datetime.utcnow)
+    avatar_hash   = db.Column(db.String(32))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -203,6 +203,7 @@ class AnonymousUser(AnonymousUserMixin):
 login_manager.anonymous_user = AnonymousUser
 
 def getradios():
+    """ Generate bdd request for forms models """
     radios = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id))
     return radios
 
