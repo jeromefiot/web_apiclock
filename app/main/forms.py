@@ -45,8 +45,11 @@ class playerForm(Form):
         super(playerForm, self).__init__(*args, **kwargs)
         self.radio.choices = [(g.id, g.name) for g in
                               Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()]
+        self.radio.choices.append((0, 'Choose Radio'))
+        
         self.music.choices = [(g.id, g.name) for g in
                               Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()]
+        self.music.choices.append((0, 'Choose Media'))
         #podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
         #lemissions = []
         ##get all url for emissions of a podcast 

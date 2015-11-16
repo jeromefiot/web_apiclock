@@ -35,11 +35,11 @@ class Alarm(db.Model):
 class Music(db.Model):
     __tablename__ = 'musics'
     id            = db.Column(db.Integer, primary_key=True)
-    name          = db.Column(db.String(64), unique=True)
-    url           = db.Column(db.String(64), unique=True)
-    img           = db.Column(db.String(64), unique=True)
+    name          = db.Column(db.String(128), unique=True)
+    url           = db.Column(db.String(128), unique=True)
+    img           = db.Column(db.String(128))
     description   = db.Column(db.Text())
-    music_type    = db.Column(db.String(64))
+    music_type    = db.Column(db.Integer)
     users         = db.Column(db.Integer)
 
 

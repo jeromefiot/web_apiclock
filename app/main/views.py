@@ -56,8 +56,11 @@ def presentation():
 
 @main.route('/blog')
 def blog():
+    f     = open('/home/pi/apiclock/articles.txt', 'r')
+    data1 = f.readlines()
+    data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
     
-    return render_template('public/blog.html')
+    return render_template('public/blog.html', articles=data)
 
 
 @main.route('/thanks')
@@ -115,6 +118,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     
     client = MPDClient()
     client.connect("localhost", 6600)
+    test = client.status()
     
     alarms = Alarm.query.filter_by(users=current_user.id).all()
         
@@ -144,18 +148,24 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     
     elif form1.submit.data:
         """depending on media type get id and then request for url"""
-        if form1.media.data == "1" :
+        
+        if form1.radio.data != 0:
             mediaid = form1.radio.data
-        #elif form1.podcast.data :
-        #    mediatype = form1.podcast.data
-        #    podcast = Music.query.filter(Music.id==mediatype).first()
-            #d = feedparser.parse(podcast.url)
-            #shows=[(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
-        else :
+        elif form1.radio.data == 0:
             mediaid = form1.music.data
-        media = Music.query.filter(Music.id==mediaid).first()
-        print media.url
-        jouerMPD(media.url)
+        else:
+            mediaid = form1.music.data
+            
+        print form1.radio.data
+        print form1.music.data
+        print mediaid
+        print form1.music.choices
+        
+        choosen_media = Music.query.filter(Music.id==mediaid).first()
+        
+        print type(choosen_media)
+        
+        #jouerMPD(media_type.url)
         return redirect(url_for('.dashboard'))
     
     # get in GET the action's param
@@ -183,7 +193,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         return redirect(url_for('.dashboard'))
     else :
         return render_template('dashboard.html', form1=form1, formsnooze=formsnooze,
-                               alarms=alarms, listedujour=listedujour)
+                               alarms=alarms, listedujour=listedujour, test=test)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -271,7 +281,8 @@ def admin_stuff(idline='0'):
     form  = addAdmin()
     f     = open('/home/pi/apiclock/admin.txt', 'r')
     data1 = f.readlines()
-    data  = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
+    data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
+    # data  = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
     today = datetime.datetime.now().strftime('%d-%m-%y')
     
     if form.validate_on_submit():
@@ -288,7 +299,7 @@ def admin_stuff(idline='0'):
             date_todo = datetime.datetime.now()+datetime.timedelta(days=1)
             date_todo = date_todo.strftime('%d-%m-%y')
             
-        f.write(text_todo+'__'+str(date_todo)+'\n')
+        f.write(u''.join(text_todo).encode('utf-8')+'__'+str(date_todo)+'\n')
         f.close()
         return redirect(url_for('.admin_stuff'))
     
