@@ -1,7 +1,7 @@
 # coding: utf-8
 import subprocess, os, datetime
 
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Mail, Message
 from sqlalchemy.sql import and_
@@ -11,7 +11,8 @@ from threading import Thread
 
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm, snoozeForm
-from .. import db, mail
+from .. import db
+from ..email import send_email
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
 from ..functions import jouerMPD, snooze
@@ -29,13 +30,12 @@ def contact():
             flash('All fields are required.')
             return render_template('public/contact.html', form=form)
         else:
-            msg      = Message(form.subject.data, sender='contact@example.com',
-                               recipients=['j_fiot@hotmail.com'])
+            msg = Message(form.subject.data, 
+                          sender='contact@example.com',
+                          recipients=['j_fiot@hotmail.com'])
             msg.body = """
-            From: %s &lt;%s&gt;
-            %s
-            """ % (form.name.data, form.email.data, form.message.data)
-            mail.send(msg)
+            From: %s &lt; %s &gt; %s """ % (form.name.data, form.email.data, form.message.data)
+            send_email(current_user.email, 'APICLOCK MAIL from '+form.email.data, 'auth/email/contact', msg.body)
             return render_template('public/contact.html', success=True)
         
     elif request.method == 'GET':
@@ -115,10 +115,11 @@ def index():
 @login_required
 @admin_required
 def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3"):
-    
+
+    # Get and Print MPD state
     client = MPDClient()
     client.connect("localhost", 6600)
-    test = client.status()
+    test = client.status()['state']
     
     alarms = Alarm.query.filter_by(users=current_user.id).all()
         

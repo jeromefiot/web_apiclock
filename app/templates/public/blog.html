@@ -14,11 +14,10 @@
         <p>
             <i class="fa fa-clock-o "></i> <b>Publié le {{ list1[3] }}</b>
         </p>
-        <hr>
-            {{ list1[2]|safe }}
-        <br/><br/><br/>
-            <p ><a href="{{ lien[1]|safe }}" target='_blank'>La suite de {{ list1[1] }}</a></p>
         <br/>
+        {{ list1[2]|safe }}
+        <br/><br/>
+            <p >Lire la suite de :<a href="{{ lien[1]|safe }}" target='_blank'> <b>{{ list1[1] }} >> </b></a></p>
         <hr>
         <br/>
 
