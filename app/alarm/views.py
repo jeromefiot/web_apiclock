@@ -143,15 +143,15 @@ def index(action, idr):
     # edit alarm by id (idr)
         alarmeedit  = Alarm.query.filter(Alarm.id == idr).first()
         form        = addAlarmForm(obj=alarmeedit)
-        return render_template("alarm/alarm.html",
+        return render_template("alarm/alarm2.html",
              form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
     
     elif action == '3':
     # Call statealarm function which activate / deactivate alarm 
         statealarm(idr)
-        return render_template("alarm/alarm.html",
+        return render_template("alarm/alarm2.html",
             form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)
     
     else:
-        return render_template("alarm/alarm.html",
+        return render_template("alarm/alarm2.html",
              form=form, form2=form2, user=current_user, alarms=alarms, radios=radios)

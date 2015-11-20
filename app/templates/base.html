@@ -14,35 +14,6 @@
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
-<script language="javascript">//<![CDATA[
-    $(document).ready(function() {
-        $("#form1-radios").show();
-        $("#form1-podcasts").hide();
-        $("#form1-musics").hide();
-        
-        $("#form1-media").change(function() {
-            if ($("#form1-media").val() == "1"){
-                $("#form1-radios").show();
-                $("#form1-podcasts").hide();
-                $("#form1-musics").hide();
-            } else if ($("#form1-media").val() == "2") {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").show();
-               $("#form1-musics").hide();
-            } else if ($("#form1-media").val() == "3") {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").hide();
-               $("#form1-musics").show();
-            } else {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").hide();
-               $("#form1-musics").hide();
-            }
-        });
-    });
-    //]]>
-</script>
-
 {% endblock %}
 
 {% block navbar %}

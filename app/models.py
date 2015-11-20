@@ -11,25 +11,26 @@ from sqlalchemy.sql import and_
 
 
 class Permission:
-    FOLLOW            = 0x01
-    COMMENT           = 0x02
-    WRITE_ARTICLES    = 0x04
-    MODERATE_COMMENTS = 0x08
+    READ_MEDIAS       = 0x01
+    READ_TODO         = 0x02
+    MANAGE_MEDIAS     = 0x04
+    MANAGE_ALARMS     = 0x08
     ADMINISTER        = 0x80
+    VISITOR           = 0x3
 
 
 class Alarm(db.Model):
     """ Alarms (add by cronjob for each user)
     """
     __tablename__ = 'alarm'
-    id         = db.Column(db.Integer, primary_key=True)
-    state      = db.Column(db.Boolean, default=True)
-    namealarme = db.Column(db.String(120))
-    startdate  = db.Column(db.String(64))
-    duration   = db.Column(db.String(140))
-    frequence  = db.Column(db.String(140))
-    days       = db.Column(db.String(140))
-    users      = db.Column(db.Integer)
+    id          = db.Column(db.Integer, primary_key=True)
+    state       = db.Column(db.Boolean, default=True)
+    namealarme  = db.Column(db.String(120))
+    startdate   = db.Column(db.String(64))
+    duration    = db.Column(db.String(140))
+    frequence   = db.Column(db.String(140))
+    days        = db.Column(db.String(140))
+    users       = db.Column(db.Integer)
 
 
 class Music(db.Model):
@@ -57,11 +58,12 @@ class Role(db.Model):
             'User': (Permission.FOLLOW |
                      Permission.COMMENT |
                      Permission.WRITE_ARTICLES, True),
-            'Moderator': (Permission.FOLLOW |
-                          Permission.COMMENT |
-                          Permission.WRITE_ARTICLES |
-                          Permission.MODERATE_COMMENTS, False),
-            'Administrator': (0xff, False)
+            'Moderator':    (Permission.FOLLOW |
+                             Permission.COMMENT |
+                             Permission.WRITE_ARTICLES |
+                             Permission.MODERATE_COMMENTS, False),
+            'Visitor':      (Permission.READ_MEDIAS, True),
+            'Administrator':(0xff, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -174,6 +176,9 @@ class User(UserMixin, db.Model):
 
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+        
+    def is_visitor(self):
+        return self.can(Permission.VISITOR)
 
     def ping(self):
         self.last_seen = datetime.utcnow()

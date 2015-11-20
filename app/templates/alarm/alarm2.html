@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Apiclock - Alarm{% endblock %}
+
+<head>
+{% block head %}
+    {{ super() }}
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/component.css') }}" />
+    <script src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <script language="javascript">
+        $(document).ready(function() {
+            $("#musics").hide(); 
+            
+            $('ul li').click(function(){
+                console.log( $(this).text() )
+                if ($(this).text() == "Radio"){
+                    $("#radios").show();
+                    $("#musics").hide();
+                }
+                else if ($(this).text() == "Music"){
+                    $("#radios").hide();
+                    $("#musics").show();
+                }
+                else {
+                    $("#radios").show();
+                    $("#musics").hide();
+                }
+            });
+            
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+	<body class="nl-blurred">
+		<div class="container demo-1">
+			<!-- Top Navigation -->
+			<div class="main clearfix">
+				<form id="nl-form" class="nl-form">
+					<br/>
+					I would like to listen to 
+                    <select id="media" >
+                        <option value="0" selected>this media type</option>
+                        {% for choice in form2.media.choices %}
+                            {% if choice[1] != "Podcast" %}
+                                <option value="{{choice[0]}}">{{ choice[1]|replace("Musique", "Music") }}</option>
+                            {% endif %}
+                        {% endfor %}                        
+                    </select>
+					with this 
+                    
+                    <div id="radios">
+                        <select >
+                            <option value="0" selected>station</option>
+                            {% for radio in form2.radio.choices %}
+                                <option value="{{radio[0]}}">{{ radio[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div id="musics">
+                        <select >
+                            <option selected value="0">track</option>
+                            {% for music in form2.music.choices %}
+                                <option value="{{music[0]}}">{{ music[1]|slice(33) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+					at 
+					<select>
+						<option selected value="0">anytime</option>
+					 	<option value="1">7 p.m.</option>
+					 	<option value="2">8 p.m.</option>
+					 	<option value="3">9 p.m.</option>
+					</select>
+					<select>
+                        <option selected value="0">min.</option>
+					 	<option value="1"> : 00</option>
+					 	<option value="2"> : 05</option>
+					 	<option value="3"> : 10</option>
+						<option value="4"> : 15</option>
+					</select>
+        <!-- in <input type="text" value="" placeholder="any city" data-subline="For example: <em>Los Angeles</em> or <em>New York</em>"/>-->
+                    <div class="nl-submit-wrap">
+                        <button class="nl-submit" type="submit">Add Alarm</button>
+					</div>
+					<div class="nl-overlay"></div>
+				</form>
+			</div>
+		</div><!-- /container -->
+		<script src="{{ url_for('static', filename='js/nlform.js') }}"></script>
+		<script>
+			var nlform = new NLForm( document.getElementById( 'nl-form' ) );
+		</script>
+{% endblock %}
+
+<div id="footer">
+    {% block footer %}
+        {% include '_footer.html' %}
+    {% endblock %}
+</div>
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    {{ moment.lang("fr") }}
+{% endblock %}
