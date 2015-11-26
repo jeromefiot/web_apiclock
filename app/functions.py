@@ -9,7 +9,8 @@ from .models import Alarm, Music
 
 
 #get current environment variable for crontab commands
-env_path     = os.environ['VIRTUAL_ENV']
+#env_path     = os.environ['VIRTUAL_ENV']
+env_path     = '/Users/fiot/.virtualenvs/site_apiclock'
 script_path  = os.path.dirname(os.path.realpath(sys.argv[0]))
 cron_command = env_path + '/bin/python ' + script_path + '/mpdplay.py'
 newcron      = CronTab(user=True)
@@ -63,7 +64,7 @@ def statealarm(idalarm):
     actionalarm = newcron.find_comment('Alarme ID:'+str(idalarm))
     actionalarm = next(actionalarm)
     alarms      = Alarm.query.filter(Alarm.id==idalarm).first()
-    if alarms.state == 1:    
+    if alarms.state == 1:
         alarms.state = 0
         actionalarm.enable(False)
     else :
@@ -84,15 +85,31 @@ def getpodcasts():
         listepodcast.append(emissions)
     return listepodcast
 
+
+def connectMPD():
+    """ Connect MPD service on port 6600 """
+    client             = MPDClient()   # create client object
+    client.timeout     = 10            # network timeout in seconds (floats allowed), default: None
+    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
+    try:
+        client.connect("localhost", 6600)  # connect to localhost:6600
+    except Exception :
+        print "Can Connect to MPD..."
+
+
 def jouerMPD(path ='http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3'):
     """ play mpd with url playlist in arg """
     client             = MPDClient()   # create client object
     client.timeout     = 10            # network timeout in seconds (floats allowed), default: None
     client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
-    client.connect("localhost", 6600)  # connect to localhost:6600
-    client.clear()
-    client.add(path)
-    client.play()
+    try:
+        client.connect("localhost", 6600)  # connect to localhost:6600
+        client.clear()
+        client.add(path)
+        client.play()
+    except Exception :
+        print "Can Connect to MPD..."
+
 
 def stopMPD():
     """ Stop MPD """

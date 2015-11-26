@@ -24,33 +24,33 @@ from ..functions import jouerMPD, snooze
 @main.route('/contact', methods=['GET', 'POST'])
 def contact():
     form = ContactForm()
-    
+
     if request.method == 'POST':
         if form.validate() == False:
             flash('All fields are required.')
             return render_template('public/contact.html', form=form)
         else:
-            msg = Message(form.subject.data, 
+            msg = Message(form.subject.data,
                           sender='contact@example.com',
                           recipients=['j_fiot@hotmail.com'])
             msg.body = """
             From: %s &lt; %s &gt; %s """ % (form.name.data, form.email.data, form.message.data)
             send_email(current_user.email, 'APICLOCK MAIL from '+form.email.data, 'auth/email/contact', msg.body)
             return render_template('public/contact.html', success=True)
-        
+
     elif request.method == 'GET':
         return render_template('public/contact.html', form=form)
 
 
 @main.route('/apiclock')
 def apiclock():
-    
+
     return render_template('index.html')
 
 
 @main.route('/presentation')
 def presentation():
-    
+
     return render_template('public/presentation.html')
 
 
@@ -59,25 +59,25 @@ def blog():
     f     = open('/home/pi/apiclock/articles.txt', 'r')
     data1 = f.readlines()
     data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
-    
+
     return render_template('public/blog.html', articles=data)
 
 
 @main.route('/thanks')
 def thanks():
-    
+
     return render_template('public/thanks.html')
 
 
 @main.route('/cv')
 def cv():
-    
+
     return render_template('public/cv.html')
 
 
 @main.route('/installation')
 def installation():
-    
+
     return render_template('public/installation.html')
 
 
@@ -96,7 +96,7 @@ def index():
     client.timeout = 10                # network timeout in seconds (floats allowed), default: None
     client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
     client.connect("localhost", 6600)
-    
+
     if 'play' in request.form:
         # connect to localhost:6600
         client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
@@ -104,7 +104,7 @@ def index():
     elif 'stop' in request.form:
         client.stop()
         client.close()
-    return render_template('index.html')    
+    return render_template('index.html')
 
 #========================================
 #============= PAGES PRIVEES ============
@@ -120,11 +120,12 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     client = MPDClient()
     client.connect("localhost", 6600)
     test = client.status()['state']
-    
+
     alarms = Alarm.query.filter_by(users=current_user.id).all()
-        
+
     # load todo list and search for today todo
-    f           = open('/home/pi/apiclock/admin.txt', 'r')
+    liste_admin = current_app.config['ADMIN_LIST']
+    f           = open(liste_admin+'/admin.txt', 'r')
     data1       = f.readlines()
     today       = datetime.datetime.now().strftime('%d-%m-%y')
     listedujour = []
@@ -132,12 +133,12 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         if element[-9:-1] == today:
             # cut end (= date )and remove last element (/) then compare with date
             listedujour.append(element[:-11])
-        else : 
+        else :
             pass
-    
+
     form1       = playerForm(prefix="form1")
     formsnooze  = snoozeForm()
-    
+
     if formsnooze.submitsnooze.data:
         """Get radio by id and return url for jouerMPD()"""
         radiosnooze   = formsnooze.radiosnooze.data
@@ -146,29 +147,29 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         minutessnooze = int(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
         return redirect(url_for('.dashboard'))
-    
+
     elif form1.submit.data:
         """depending on media type get id and then request for url"""
-        
+
         if form1.radio.data != 0:
             mediaid = form1.radio.data
         elif form1.radio.data == 0:
             mediaid = form1.music.data
         else:
             mediaid = form1.music.data
-            
+
         print form1.radio.data
         print form1.music.data
         print mediaid
         print form1.music.choices
-        
+
         choosen_media = Music.query.filter(Music.id==mediaid).first()
-        
+
         print type(choosen_media)
-        
+
         #jouerMPD(media_type.url)
         return redirect(url_for('.dashboard'))
-    
+
     # get in GET the action's param
     elif action == '1':
         """play the urlmedia passed in args with a 110% volum"""
@@ -267,7 +268,7 @@ def users():
 def diskutil():
     commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
     retour   = commande.stdout.readlines()
-    
+
     commande = subprocess.Popen("du -h ./app/static/musique",stdout=subprocess.PIPE,shell=True)
     retour2  = commande.stdout.readlines()
 
@@ -280,14 +281,14 @@ def diskutil():
 @admin_required
 def admin_stuff(idline='0'):
     form  = addAdmin()
-    f     = open('/home/pi/apiclock/admin.txt', 'r')
+    liste_admin = current_app.config['ADMIN_LIST']
+    f = open(liste_admin+'/admin.txt', 'r')
     data1 = f.readlines()
     data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
-    # data  = [str(i)+'/'+str(val) for i, val in enumerate(data1)]
     today = datetime.datetime.now().strftime('%d-%m-%y')
-    
+
     if form.validate_on_submit():
-        f = open('/home/pi/apiclock/admin.txt', 'a+')
+        f = open(liste_admin+'/admin.txt', 'a')
         """add line to the admin.txt with number and extract date """
         ajout = form.about_me.data
         # extract date if mentionned ('__') else add tomorow for the date
@@ -299,29 +300,29 @@ def admin_stuff(idline='0'):
             text_todo = ajout
             date_todo = datetime.datetime.now()+datetime.timedelta(days=1)
             date_todo = date_todo.strftime('%d-%m-%y')
-            
+
         f.write(u''.join(text_todo).encode('utf-8')+'__'+str(date_todo)+'\n')
         f.close()
         return redirect(url_for('.admin_stuff'))
-    
+
     elif 'modify' in idline:
         """ load txt in a list, add DONE --- to the idline list element and write new txt"""
         test = idline.split()[0]
         data1[int(test)]='DONE --- '+data1[int(test)]
-        f = open('/home/pi/apiclock/admin.txt', 'w')
+        f = open(liste_admin+'/admin.txt', 'w')
         for line in data1:
             f.write(line)
         f.close()
         return redirect(url_for('.admin_stuff'))
-    
+
     elif 'delete' in idline:
         """ get the id (by splitting the line) of the element, delete it, re write the new txt"""
         test = idline.split()[0]
         del data1[int(test)]
-        f = open('/home/pi/apiclock/admin.txt', 'w')
+        f = open(liste_admin+'/admin.txt', 'w')
         for line in data1:
             f.write(line)
         f.close()
         return redirect(url_for('.admin_stuff'))
-        
+
     return render_template('admin_stuff.html', form=form, data=data, today=today)
