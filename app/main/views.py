@@ -171,18 +171,25 @@ def dashboard(action,
 
     # get in GET the action's param
     elif action == '1':
-        """ Play the urlmedia passed in args with a 110% volum """
+        """ Verify MPD connexion and play the urlmedia in args with volum """
         os.system('amixer sset PCM,0 94%')
-        client.stop()
-        client.clear()
-        client.add("http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3")
-        client.play()
+        if connectMPD():
+            client.stop()
+            client.clear()
+            client.add("http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3")
+            client.play()
+        else :
+            flash('MPD not connected')
         return redirect(url_for('.dashboard'))
+
     elif action == '0':
-        """ Stop and clear MPD playlist """
-        client.clear()
-        client.stop()
-        client.close()
+        """ Verify MPD connection and stop and clear MPD playlist """
+        if connectMPD():
+            client.clear()
+            client.stop()
+            client.close()
+        else :
+            flash('MPD not connected')
         return redirect(url_for('.dashboard'))
     elif action == '2':
         """ Increase volume by 3dB """
