@@ -56,9 +56,11 @@ def presentation():
 
 @main.route('/blog')
 def blog():
-    f     = open('/home/pi/apiclock/articles.txt', 'r')
-    data1 = f.readlines()
-    data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
+    """ List blog posts from file articles.txt """
+    f           = open(current_app.config['ADMIN_LIST']+'/'
+                  +current_app.config['BLOG_POST'], 'r')
+    data1       = f.readlines()
+    data        = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
 
     return render_template('public/blog.html', articles=data)
 
@@ -123,8 +125,8 @@ def dashboard(action,
     alarms = Alarm.query.filter_by(users=current_user.id).all()
 
     """ load todo list and search for today todo """
-    liste_admin = current_app.config['ADMIN_LIST']
-    f           = open(liste_admin+'/admin.txt', 'r')
+    f           = open(current_app.config['ADMIN_LIST']+'/'
+                  +current_app.config['TODO_LIST'], 'r')
     data1       = f.readlines()
     today       = datetime.datetime.now().strftime('%d-%m-%y')
     listedujour = []
@@ -289,14 +291,15 @@ def diskutil():
 @admin_required
 def admin_stuff(idline='0'):
     form  = addAdmin()
-    liste_admin = current_app.config['ADMIN_LIST']
-    f = open(liste_admin+'/admin.txt', 'r')
+    f     = open(current_app.config['ADMIN_LIST']+'/'
+            +current_app.config['TODO_LIST'], 'r')
     data1 = f.readlines()
     data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
     today = datetime.datetime.now().strftime('%d-%m-%y')
 
     if form.validate_on_submit():
-        f = open(liste_admin+'/admin.txt', 'a')
+        f     = open(current_app.config['ADMIN_LIST']+'/'
+                +current_app.config['TODO_LIST'], 'a')
         """add line to the admin.txt with number and extract date """
         ajout = form.about_me.data
         """ Extract date if mentionned ('__') else add tomorow for the date"""
@@ -331,7 +334,8 @@ def admin_stuff(idline='0'):
         and re write the new txt """
         test = idline.split()[0]
         del data1[int(test)]
-        f = open(liste_admin+'/admin.txt', 'w')
+        f    = open(current_app.config['ADMIN_LIST']+'/'
+               +current_app.config['TODO_LIST'], 'w')
         for line in data1:
             f.write(line)
         f.close()
