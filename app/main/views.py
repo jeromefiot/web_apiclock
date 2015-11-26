@@ -74,7 +74,6 @@ def cv():
 
     return render_template('public/cv.html')
 
-
 @main.route('/installation')
 def installation():
 
@@ -295,10 +294,12 @@ def admin_stuff(idline='0'):
         ajout = form.about_me.data
         """ Extract date if mentionned ('__') else add tomorow for the date"""
         if '__' in ajout :
+            """ Slice string if date in todo """
             date_todo = ajout[-8:]
             date_todo = datetime.datetime.strptime(date_todo, '%d-%m-%y').date()
             text_todo = ajout[:-8]
         else:
+            """ If no date in todo add due day to tomorow """
             text_todo = ajout
             date_todo = datetime.datetime.now()+datetime.timedelta(days=1)
             date_todo = date_todo.strftime('%d-%m-%y')
