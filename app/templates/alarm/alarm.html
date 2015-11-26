@@ -3,6 +3,38 @@
 
 {% block title %}Apiclock - Alarm{% endblock %}
 
+{% block head %}
+    {{ super() }}
+    <script language="javascript">//<![CDATA[
+        $(document).ready(function() {
+            $("#form1-radios").show();
+            $("#form1-podcasts").hide();
+            $("#form1-musics").hide();
+            
+            $("#form1-media").change(function() {
+                if ($("#form1-media").val() == "1"){
+                    $("#form1-radios").show();
+                    $("#form1-podcasts").hide();
+                    $("#form1-musics").hide();
+                } else if ($("#form1-media").val() == "2") {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").show();
+                   $("#form1-musics").hide();
+                } else if ($("#form1-media").val() == "3") {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").hide();
+                   $("#form1-musics").show();
+                } else {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").hide();
+                   $("#form1-musics").hide();
+                }
+            });
+        });
+        //]]>
+    </script>
+{% endblock %}
+
 {% block page_content %}
 
 <div class="bs-example add_media">
@@ -22,93 +54,128 @@
     </div>
 </div>
 
+<!-- ********************************************************** 
+http://tympanus.net/codrops/2013/05/21/natural-language-form-with-custom-input-elements/
+********************************************************** -->
 
+<div class="main clearfix">
+    <form id="nl-form" class="nl-form">
+        I feel to eat 
+        <select>
+            <option value="1" selected>any food</option>
+            <option value="2">Indian</option>
+            <option value="3">French</option>
+            <option value="4">Japanese</option>
+            <option value="2">Italian</option>
+        </select>
+        <br />in a
+        <select>
+            <option value="1" selected>standard</option>
+            <option value="2">fancy</option>
+            <option value="3">hip</option>
+            <option value="4">traditional</option>
+            <option value="2">romantic</option>
+        </select>
+        restaurant
+        <br />at 
+        <select>
+            <option value="1" selected>anytime</option>
+            <option value="1">7 p.m.</option>
+            <option value="2">8 p.m.</option>
+            <option value="3">9 p.m.</option>
+        </select>
+<!--         in <input type="text" value="" placeholder="any city" data-subline="For example: <em>Los Angeles</em> or <em>New York</em>"/> -->
+        <div class="nl-submit-wrap">
+            <button class="nl-submit" type="submit">Add Alarm</button>
+        </div>
+        <div class="nl-overlay"></div>
+    </form>
+</div>
+<!-- ********************************************************** --> 
 <!-- ********************************************************** -->
 <hr>
     <form action="" method="post" class="form" role="form">
-        {{ form2.hidden_tag() }}
+        {{ form1.hidden_tag() }}
         
-        {{ wtf.form_field(form2.name) }}
-        {{ wtf.form_field(form2.state) }}
-        {{ wtf.form_field(form2.heures) }}
-        {{ wtf.form_field(form2.minutes) }}
-        {{ wtf.form_field(form2.repetition) }}
-        {{ wtf.form_field(form2.jours) }}
+        {{ wtf.form_field(form1.name) }}
+        {{ wtf.form_field(form1.state) }}
+        {{ wtf.form_field(form1.heures) }}
+        {{ wtf.form_field(form1.minutes) }}
+        {{ wtf.form_field(form1.repetition) }}
+        {{ wtf.form_field(form1.jours) }}
         
-        <div class="form-group" id="form1-medias"><label class="control-label" for="form1-media">{{ form2.media.label }}</label>
+        <div class="form-group" id="form1-medias"><label class="control-label" for="form1-media">{{ form1.media.label }}</label>
             <select class="form-control" id="form1-media" name="form1-media">
-            {% for choice in form2.media.choices %}
+            {% for choice in form1.media.choices %}
                 <option value="{{choice[0]}}">{{ choice[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="form1-radios"><label class="control-label" for="form1-radio">{{ form2.radio.label }}</label>
+        <div class="form-group" id="form1-radios"><label class="control-label" for="form1-radio">{{ form1.radio.label }}</label>
             <select class="form-control" id="form1-radio" name="form1-radio">
-            {% for radio in form2.radio.choices %}
+            {% for radio in form1.radio.choices %}
                 <option value="{{radio[0]}}">{{ radio[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="form1-podcasts"><label class="control-label" for="form1-podcast">{{ form2.podcast.label }}</label>
+        <div class="form-group" id="form1-podcasts"><label class="control-label" for="form1-podcast">{{ form1.podcast.label }}</label>
             <select class="form-control" id="form1-podcast" name="form1-podcast">
-            {% for podcast in form2.podcast.choices %}
+            {% for podcast in form1.podcast.choices %}
                 <option value="{{podcast[0]}}">{{ podcast[1] }}</option>
             {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form2.music.label }}</label>
+        <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form1.music.label }}</label>
             <select class="form-control" id="form1-music" name="form1-music">
-                {% for music in form2.music.choices %}
+                {% for music in form1.music.choices %}
                     <option value="{{music[0]}}">{{ music[1] }}</option>
                 {% endfor %}
             </select>
         </div>
-        {{ wtf.form_field(form2.submit) }}
+        {{ wtf.form_field(form1.submit) }}
     </form>
 
 <hr>
-<!-- ********************************************************** -->
-
 
 <h2>ALARMES</h2>
 
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Days</th>
-			<th>Frequency</th>
-			<th>Action</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for alarm in alarms %}
-		<tr>
-			<td>{{ alarm.namealarme }}</td>
-			<td>{{ alarm.days }}</td>
-			<td>{{ alarm.frequence }}</td>
-			<td>
-                {% if alarm.state == 1 %}
-                    <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
-                   role="button">Desactiver</a>
-                {% else %}
-                    <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-success btn-sm active"
-                   role="button">Activer</a>
-                {% endif %}
-                <a href="{{url_for('alarm.index', action='2', idr=alarm.id)}}" class="btn btn-default btn-sm active"
-                   role="button">Editer</a>
-                <a href="{{url_for('alarm.index', action='1', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
-                   role="button">Supprimer</a>
-			</td>
-		</tr>
-		{% endfor %}
-	</tbody
-</table>
-
-
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Days</th>
+                <th>Frequency</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alarm in alarms %}
+            <tr>
+                <td>{{ alarm.namealarme }}</td>
+                <td>{{ alarm.days }}</td>
+                <td>{{ alarm.frequence }}</td>
+                <td>
+                    {% if alarm.state == 1 %}
+                        <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
+                       role="button">Desactiver</a>
+                    {% else %}
+                        <a href="{{url_for('alarm.index', action='3', idr=alarm.id)}}" class="btn btn-success btn-sm active"
+                       role="button">Activer</a>
+                    {% endif %}
+                    <a href="{{url_for('alarm.index', action='2', idr=alarm.id)}}" class="btn btn-default btn-sm active"
+                       role="button">Editer</a>
+                    <a href="{{url_for('alarm.index', action='1', idr=alarm.id)}}" class="btn btn-danger btn-sm active"
+                       role="button">Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody
+    </table>
 <br/>
-{% if test %}
-	{{test}}
-{% endif %}
+
+<script src="{{ url_for('static', filename='js/nlform.js') }}"></script>
+<script>
+    var nlform = new NLForm(document.getElementById( 'nl-form' ));
+</script>
 
 {% endblock %}

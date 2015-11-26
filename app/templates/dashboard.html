@@ -3,6 +3,38 @@
 
 {% block title %}Apiclock - Dashboard{% endblock %}
 
+{% block head %}
+    {{ super() }}
+    <script language="javascript">//<![CDATA[
+        $(document).ready(function() {
+            $("#form1-radios").show();
+            $("#form1-podcasts").hide();
+            $("#form1-musics").hide();
+            
+            $("#form1-media").change(function() {
+                if ($("#form1-media").val() == "1"){
+                    $("#form1-radios").show();
+                    $("#form1-podcasts").hide();
+                    $("#form1-musics").hide();
+                } else if ($("#form1-media").val() == "2") {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").show();
+                   $("#form1-musics").hide();
+                } else if ($("#form1-media").val() == "3") {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").hide();
+                   $("#form1-musics").show();
+                } else {
+                   $("#form1-radios").hide();
+                   $("#form1-podcasts").hide();
+                   $("#form1-musics").hide();
+                }
+            });
+        });
+        //]]>
+    </script>
+{% endblock %}
+
 {% block page_content %}
 <div class="page-header">
     <div style="margin-top:-50px;">
@@ -28,7 +60,12 @@
         <div class="form-group" id="form1-radios"><label class="control-label" for="form1-radio">{{ form1.radio.label }}</label>
             <select class="form-control" id="form1-radio" name="form1-radio">
             {% for radio in form1.radio.choices %}
-                <option value="{{radio[0]}}">{{ radio[1] }}</option>
+                {# set default selection if value ="Choose media" with id = 0' #}
+                {% if radio[1] == 'Choose Radio' %}
+                    <option value="{{radio[0]}}" selected="selected">{{ radio[1] }}</option>
+                {% else %}
+                    <option value="{{radio[0]}}">{{ radio[1] }}</option>
+                {% endif %}
             {% endfor %}
             </select>
         </div>
@@ -36,7 +73,12 @@
         <div class="form-group" id="form1-musics"><label class="control-label" for="form1-music">{{ form1.music.label }}</label>
             <select class="form-control" id="form1-music" name="form1-music">
                 {% for music in form1.music.choices %}
-                    <option value="{{music[0]}}">{{ music[1] }}</option>
+                    {# set default selection if value ="Choose media" with id = 0' #}
+                    {% if music[1] == 'Choose Media' %}
+                        <option value="{{music[0]}}" selected="selected">{{ music[1] }}</option>
+                    {% else %}
+                        <option value="{{music[0]}}">{{ music[1] }}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -99,5 +141,5 @@
         {% endfor %}
     </div>
 </div>
-    
+
 {% endblock %}

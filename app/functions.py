@@ -63,12 +63,13 @@ def statealarm(idalarm):
     actionalarm = newcron.find_comment('Alarme ID:'+str(idalarm))
     actionalarm = next(actionalarm)
     alarms      = Alarm.query.filter(Alarm.id==idalarm).first()
-    if alarms.state == True:    
+    if alarms.state == 1:    
         alarms.state = 0
         actionalarm.enable(False)
     else :
         alarms.state = 1
-        actionalarm.enable(True)
+        actionalarm.enable()
+    newcron.write()
     db.session.commit()
 
 

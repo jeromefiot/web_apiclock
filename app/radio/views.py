@@ -131,11 +131,11 @@ def podcast(action):
         try:
             stock_music = urllib.urlretrieve(urlmusic, up_dir+name_podcast)
             # TO ADD : check the disk space
-            podcast = Music(name     = name_podcast,
-                          url        = "http://jeromefiot.fr/static/musique/"+name_podcast,
-                          music_type = '3',
-                          users      = current_user.id)
-            db.session.add(podcast)
+            addmusic = Music(name     = name_podcast,
+                           url        = "http://jeromefiot.fr/static/musique/"+name_podcast,
+                           music_type = 3,
+                           users      = current_user.id)
+            db.session.add(addmusic)
             db.session.commit()
             flash('Your podcast has been download in your Music')
         except:

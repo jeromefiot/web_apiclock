@@ -14,35 +14,6 @@
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
-<script language="javascript">//<![CDATA[
-    $(document).ready(function() {
-        $("#form1-radios").show();
-        $("#form1-podcasts").hide();
-        $("#form1-musics").hide();
-        
-        $("#form1-media").change(function() {
-            if ($("#form1-media").val() == "1"){
-                $("#form1-radios").show();
-                $("#form1-podcasts").hide();
-                $("#form1-musics").hide();
-            } else if ($("#form1-media").val() == "2") {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").show();
-               $("#form1-musics").hide();
-            } else if ($("#form1-media").val() == "3") {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").hide();
-               $("#form1-musics").show();
-            } else {
-               $("#form1-radios").hide();
-               $("#form1-podcasts").hide();
-               $("#form1-musics").hide();
-            }
-        });
-    });
-    //]]>
-</script>
-
 {% endblock %}
 
 {% block navbar %}
@@ -91,7 +62,14 @@
                     <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
                 </ul> 
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
+                    {# MPD status #}
+                    {% if test =='play' %}
+                        <li><a href="#" style="background-color:yellow;">MPD ON</a></li>
+                    {% else %}
+                        <li><a href="#" style="background-color:#333333;">MPD OFF</a></li>
+                    {% endif %}
+                
+                <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="{{ current_user.gravatar(size=18) }}">
                             Account <b class="caret"></b>
@@ -125,6 +103,14 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_administrator() %}
+                
+                {# MPD status #}
+                {% if test =='play' %}
+                    <li><a href="#" style="background-color:yellow;">MPD ON</a></li>
+                {% else %}
+                    <li><a href="#" style="background-color:#333333;">MPD OFF</a></li>
+                {% endif %}
+                
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{ current_user.gravatar(size=18) }}">

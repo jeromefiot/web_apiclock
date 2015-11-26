@@ -3,12 +3,15 @@
 *.pyc
 *.sqlite
 *.cfg
-admin.txt
-requirements.txt
 *.geany
 /app/static
 /tmp
+/yowsup
+
 run.py
 config.py
-/yowsup
+scrap_rss_apiclock_blog.py
+admin.txt
+requirements.txt
+
 
