@@ -15,7 +15,7 @@ from .. import db
 from ..email import send_email
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
-from ..functions import jouerMPD, snooze
+from ..functions import jouerMPD, snooze, connectMPD
 
 #========================================
 #============ PAGES PUBLIQUES ===========
@@ -92,13 +92,10 @@ def user(username):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    client = MPDClient()               # create client object
-    client.timeout = 10                # network timeout in seconds (floats allowed), default: None
-    client.idletimeout = None          # timeout for fetching the result of the idle command is handled seperately, default: None
-    client.connect("localhost", 6600)
+    """ Connect MPD and check Play /stop"""
+    connectMPD()
 
     if 'play' in request.form:
-        # connect to localhost:6600
         client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
         client.play()
     elif 'stop' in request.form:
@@ -114,16 +111,19 @@ def index():
 @main.route('/dashboard/<action>/<musique>', methods=['GET', 'POST'])
 @login_required
 @admin_required
-def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3"):
+def dashboard(action,
+      musique="http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3"):
 
-    # Get and Print MPD state
-    client = MPDClient()
-    client.connect("localhost", 6600)
-    test = client.status()['state']
+    """ Get and Print MPD state """
+    if connectMPD():
+        client =  MPDClient()
+        test   = client.status()['state']
+    else:
+        test   = False
 
     alarms = Alarm.query.filter_by(users=current_user.id).all()
 
-    # load todo list and search for today todo
+    """ load todo list and search for today todo """
     liste_admin = current_app.config['ADMIN_LIST']
     f           = open(liste_admin+'/admin.txt', 'r')
     data1       = f.readlines()
@@ -131,7 +131,8 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     listedujour = []
     for element in data1:
         if element[-9:-1] == today:
-            # cut end (= date )and remove last element (/) then compare with date
+            """ Cut end (= date )and remove last element (/)
+            then compare with date """
             listedujour.append(element[:-11])
         else :
             pass
@@ -140,7 +141,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
     formsnooze  = snoozeForm()
 
     if formsnooze.submitsnooze.data:
-        """Get radio by id and return url for jouerMPD()"""
+        """ Get radio by id and return url for jouerMPD()"""
         radiosnooze   = formsnooze.radiosnooze.data
         radiosnooze   = Music.query.filter(Music.id==radiosnooze).first()
         radiosnooze   = radiosnooze.url
@@ -149,7 +150,7 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         return redirect(url_for('.dashboard'))
 
     elif form1.submit.data:
-        """depending on media type get id and then request for url"""
+        """ Depending on media type get id and then request for url """
 
         if form1.radio.data != 0:
             mediaid = form1.radio.data
@@ -167,12 +168,11 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
 
         print type(choosen_media)
 
-        #jouerMPD(media_type.url)
         return redirect(url_for('.dashboard'))
 
     # get in GET the action's param
     elif action == '1':
-        """play the urlmedia passed in args with a 110% volum"""
+        """ Play the urlmedia passed in args with a 110% volum """
         os.system('amixer sset PCM,0 94%')
         client.stop()
         client.clear()
@@ -180,17 +180,17 @@ def dashboard(action, musique="http://audio.scdn.arkena.com/11010/franceculture-
         client.play()
         return redirect(url_for('.dashboard'))
     elif action == '0':
-        """stop and clear MPD playlist"""
+        """ Stop and clear MPD playlist """
         client.clear()
         client.stop()
         client.close()
         return redirect(url_for('.dashboard'))
     elif action == '2':
-        """Increase volume by 3dB"""
+        """ Increase volume by 3dB """
         os.system('amixer sset PCM,0 3dB+')
         return redirect(url_for('.dashboard'))
     elif action == '3':
-        """Decrease volume by 3dB"""
+        """ Decrease volume by 3dB """
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
     else :
@@ -269,7 +269,9 @@ def diskutil():
     commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
     retour   = commande.stdout.readlines()
 
-    commande = subprocess.Popen("du -h ./app/static/musique",stdout=subprocess.PIPE,shell=True)
+    commande = subprocess.Popen("du -h ./app/static/musique",
+                                stdout=subprocess.PIPE,
+                                shell =True)
     retour2  = commande.stdout.readlines()
 
     return render_template('/admin/diskutil.html', test=retour, test2=retour2)
@@ -291,7 +293,7 @@ def admin_stuff(idline='0'):
         f = open(liste_admin+'/admin.txt', 'a')
         """add line to the admin.txt with number and extract date """
         ajout = form.about_me.data
-        # extract date if mentionned ('__') else add tomorow for the date
+        """ Extract date if mentionned ('__') else add tomorow for the date"""
         if '__' in ajout :
             date_todo = ajout[-8:]
             date_todo = datetime.datetime.strptime(date_todo, '%d-%m-%y').date()
@@ -306,7 +308,8 @@ def admin_stuff(idline='0'):
         return redirect(url_for('.admin_stuff'))
 
     elif 'modify' in idline:
-        """ load txt in a list, add DONE --- to the idline list element and write new txt"""
+        """ Load txt in a list, add DONE --- to the idline list element
+        and write new txt"""
         test = idline.split()[0]
         data1[int(test)]='DONE --- '+data1[int(test)]
         f = open(liste_admin+'/admin.txt', 'w')
@@ -316,7 +319,8 @@ def admin_stuff(idline='0'):
         return redirect(url_for('.admin_stuff'))
 
     elif 'delete' in idline:
-        """ get the id (by splitting the line) of the element, delete it, re write the new txt"""
+        """ Get the id (by splitting the line) of the element, delete it
+        and re write the new txt """
         test = idline.split()[0]
         del data1[int(test)]
         f = open(liste_admin+'/admin.txt', 'w')

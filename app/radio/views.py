@@ -10,7 +10,7 @@ from .forms import AddMusicForm, PlayRadio
 from .. import db
 from ..models import User, Music
 from ..decorators import admin_required
-from ..functions import jouerMPD, stopMPD
+from ..functions import jouerMPD, stopMPD, connectMPD
 
 
 @radio.route('/', methods=['GET', 'POST'], defaults = {'action':0, 'radioe':0})
@@ -18,15 +18,15 @@ from ..functions import jouerMPD, stopMPD
 @login_required
 @admin_required
 def index(action, radioe):
+    """ Display radio of current user and propose to add medias, play, stop, and delete radios"""
 
     radio  = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
     form   = AddMusicForm()
     form2  = PlayRadio()
-    client = MPDClient()
-    client.connect("localhost", 6600)
-    
+    connectMPD()
+
     if form.validate_on_submit() and form.music_type.data=='1':
-        # if Radio type added insert radio in bdd
+        """ Radio type added in bdd """
         radio = Music(name       =form.name.data,
                       url        =form.url.data,
                       description=form.description.data,
@@ -36,9 +36,9 @@ def index(action, radioe):
         db.session.commit()
         flash('Radio has been added.')
         return redirect(url_for('.index'))
-    
+
     elif form.validate_on_submit() and form.music_type.data=='2':
-        # if Feed (podcast) added then redirect to linked shows
+        """ if Feed (podcast) added then redirect to linked shows """
         url =form.url.data
         d   = feedparser.parse(url)
 
@@ -50,10 +50,10 @@ def index(action, radioe):
                       users      =current_user.id)
         db.session.add(podcast)
         db.session.commit()
-        
+
         flash('Podcast ok')
         return render_template('radio/shows.html', podcast=form.name.data)
-    
+
     elif action is 1 and radioe is not 0 :
         """ action = 1 > Remove media which id = radioe """
         radiodel = Music.query.filter(Music.id==radioe).first()
@@ -63,14 +63,16 @@ def index(action, radioe):
             os.remove(current_app.config['UPLOAD_FOLDER']+name)
         flash('Delete successful !')
         return redirect(url_for('.index'))
-    
+
     elif action is 2 :
+        """ action = 2 > play radio (MPD) """
         client.clear()
         client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
         client.play()
         return redirect(url_for('.index'))
-        
+
     elif action is 3 :
+        """ action = 3 > stop radio (MPD) """
         client.clear()
         client.stop()
         client.close()
@@ -86,14 +88,14 @@ def edit(radioedit):
     radioe = Music.query.filter(Music.id==radioedit).first()
     radio  = Music.query.filter(and_(Music.music_type=='1', Music.users==current_user.id)).all()
     form   = AddMusicForm()
-    
+
     if form.validate_on_submit():
         radioe.name         = form.name.data
         radioe.url          = form.url.data
         radioe.description  = form.description.data
         db.session.add(radioe)
         flash('Radio has been updated')
-        
+
     form.name.data       = radioe.name
     form.url.data        = radioe.url
     form.description.data= radioe.description
@@ -107,7 +109,7 @@ def edit(radioedit):
 def podcast(action):
     """ Display podcasts subscription list for current user"""
     podcasts = Music.query.filter(and_(Music.music_type=='2', Music.users==current_user.id)).all()
-        
+
     if action == "unsubscribe":
         idmusic = request.args.get('music_id')
         podcast = Music.query.filter(Music.id==idmusic).first()
@@ -115,14 +117,14 @@ def podcast(action):
         db.session.commit()
         flash('Podcast has been deleted')
         return redirect(url_for('.podcast'))
-    
+
     elif action == "show":
         idmusic = request.args.get('music_id')
         podcast = Music.query.filter(Music.id==idmusic).first()
         d       = feedparser.parse(podcast.url)
         shows   = [(d.entries[i]['title'],d.entries[i].enclosures[0]['href']) for i,j in enumerate(d.entries)]
         return render_template('radio/shows.html', shows=shows, titre=podcast.name)
-    
+
     elif action == "donwload":
         """ Download podcast as music type media in music directory """
         up_dir        = "/home/pi/apiclock/app/static/musique/"
@@ -141,19 +143,19 @@ def podcast(action):
         except:
                 flash('Error adding your podcast to your music')
         return redirect(url_for('.podcast'))
-    
+
     return render_template('radio/podcast.html', podcasts=podcasts)
 
-    
+
 @radio.route('/music', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def music():
     musics = Music.query.filter(and_(Music.music_type=='3', Music.users==current_user.id)).all()
-        
+
     return render_template('radio/music.html', radios=musics)
-    
-    
+
+
 @radio.route('/local/<path:radio>')
 @login_required
 @admin_required
@@ -165,10 +167,10 @@ def local(radio):
 @login_required
 @admin_required
 def distant(radio):
-    
+
     if radio == 'stop':
         stopMPD()
         return redirect(url_for('.index'))
-        
+
     jouerMPD(radio)
     return render_template('radio/distant.html')
