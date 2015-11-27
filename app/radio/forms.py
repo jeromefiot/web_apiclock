@@ -4,6 +4,7 @@ from wtforms.validators import Length
 
 
 class AddMusicForm(Form):
+
     """Adding music Form."""
 
     name = StringField('Nom', validators=[Length(1, 64)])
@@ -15,6 +16,7 @@ class AddMusicForm(Form):
 
 
 class PlayRadio(Form):
+
     """Control music form button."""
 
     submit = SubmitField('Play')
