@@ -1,25 +1,28 @@
 # coding: utf-8
-import subprocess, os, datetime
+import subprocess
+import os
+import datetime
 
-from flask import render_template, redirect, url_for, flash, request, current_app
+from flask import render_template, redirect, url_for, flash, request,\
+                  current_app
 from flask.ext.login import login_required, current_user
 from flask.ext.mail import Mail, Message
-from sqlalchemy.sql import and_
-from crontab import CronTab
 from mpd import MPDClient
 from threading import Thread
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, playerForm, addAdmin, ContactForm, snoozeForm
+from .forms import EditProfileForm, EditProfileAdminForm, playerForm,\
+                   addAdmin, ContactForm, snoozeForm
 from .. import db
 from ..email import send_email
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
 from ..functions import jouerMPD, snooze, connectMPD
 
-#========================================
-#============ PAGES PUBLIQUES ===========
-#========================================
+# ========================================
+# ============ PAGES PUBLIQUES ===========
+# ========================================
+
 
 @main.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -31,11 +34,16 @@ def contact():
             return render_template('public/contact.html', form=form)
         else:
             msg = Message(form.subject.data,
-                          sender='contact@example.com',
+                          sender='[Contact] - Apiclock',
                           recipients=['j_fiot@hotmail.com'])
             msg.body = """
-            From: %s &lt; %s &gt; %s """ % (form.name.data, form.email.data, form.message.data)
-            send_email(current_user.email, 'APICLOCK MAIL from '+form.email.data, 'auth/email/contact', msg.body)
+            From: %s &lt; %s &gt; %s """ % (form.name.data,
+                                            form.email.data,
+                                            form.message.data)
+            send_email(current_user.email,
+                       'APICLOCK MAIL from '+form.email.data,
+                       'auth/email/contact',
+                       msg.body)
             return render_template('public/contact.html', success=True)
 
     elif request.method == 'GET':
@@ -44,41 +52,37 @@ def contact():
 
 @main.route('/apiclock')
 def apiclock():
-
     return render_template('index.html')
 
 
 @main.route('/presentation')
 def presentation():
-
     return render_template('public/presentation.html')
 
 
 @main.route('/blog')
 def blog():
     """ List blog posts from file articles.txt """
-    f           = open(current_app.config['ADMIN_LIST']+'/'
-                  +current_app.config['BLOG_POST'], 'r')
-    data1       = f.readlines()
-    data        = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
+    f = open(current_app.config['ADMIN_LIST'] + '/' +
+             current_app.config['BLOG_POST'], 'r')
+    data1 = f.readlines()
+    data = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
 
     return render_template('public/blog.html', articles=data)
 
 
 @main.route('/thanks')
 def thanks():
-
     return render_template('public/thanks.html')
 
 
 @main.route('/cv')
 def cv():
-
     return render_template('public/cv.html')
+
 
 @main.route('/installation')
 def installation():
-
     return render_template('public/installation.html')
 
 
@@ -87,15 +91,16 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user.html', user=user)
 
-#========================================
-#=========== PAGES SEMI PRIVEES =========
-#========================================
+# ========================================
+# =========== PAGES SEMI PRIVEES =========
+# ========================================
+
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
     """ Connect MPD and check Play /stop"""
     connectMPD()
-
+    client = MPDClient()
     if 'play' in request.form:
         client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
         client.play()
@@ -104,11 +109,12 @@ def index():
         client.close()
     return render_template('index.html')
 
-#========================================
-#============= PAGES PRIVEES ============
-#========================================
+# ========================================
+# ============= PAGES PRIVEES ============
+# ========================================
 
-@main.route('/dashboard', methods=['GET', 'POST'], defaults = {'action':4})
+
+@main.route('/dashboard', methods=['GET', 'POST'], defaults={'action': 4})
 @main.route('/dashboard/<action>/<musique>', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -117,35 +123,36 @@ def dashboard(action,
 
     """ Get and Print MPD state """
     if connectMPD():
-        client =  MPDClient()
-        test   = client.status()['state']
+        client = MPDClient()
+        test = client.status()['state']
     else:
-        test   = False
+        test = False
 
     alarms = Alarm.query.filter_by(users=current_user.id).all()
 
     """ load todo list and search for today todo """
-    f           = open(current_app.config['ADMIN_LIST']+'/'
-                  +current_app.config['TODO_LIST'], 'r')
-    data1       = f.readlines()
-    today       = datetime.datetime.now().strftime('%d-%m-%y')
+    f = open(current_app.config['ADMIN_LIST'] + '/' +
+             current_app.config['TODO_LIST'], 'r')
+    data1 = f.readlines()
+    today = datetime.datetime.now().strftime('%d-%m-%y')
     listedujour = []
     for element in data1:
         if element[-9:-1] == today:
             """ Cut end (= date )and remove last element (/)
             then compare with date """
+            element = element.decode('utf-8')
             listedujour.append(element[:-11])
-        else :
+        else:
             pass
 
-    form1       = playerForm(prefix="form1")
-    formsnooze  = snoozeForm()
+    form1 = playerForm(prefix="form1")
+    formsnooze = snoozeForm()
 
     if formsnooze.submitsnooze.data:
         """ Get radio by id and return url for jouerMPD()"""
-        radiosnooze   = formsnooze.radiosnooze.data
-        radiosnooze   = Music.query.filter(Music.id==radiosnooze).first()
-        radiosnooze   = radiosnooze.url
+        radiosnooze = formsnooze.radiosnooze.data
+        radiosnooze = Music.query.filter(Music.id == radiosnooze).first()
+        radiosnooze = radiosnooze.url
         minutessnooze = int(formsnooze.minutessnooze.data)
         snooze(radiosnooze, minutessnooze)
         return redirect(url_for('.dashboard'))
@@ -165,10 +172,9 @@ def dashboard(action,
         print mediaid
         print form1.music.choices
 
-        choosen_media = Music.query.filter(Music.id==mediaid).first()
+        choosen_media = Music.query.filter(Music.id == mediaid).first()
 
         print type(choosen_media)
-
         return redirect(url_for('.dashboard'))
 
     # get in GET the action's param
@@ -180,7 +186,7 @@ def dashboard(action,
             client.clear()
             client.add("http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3")
             client.play()
-        else :
+        else:
             flash('MPD not connected')
         return redirect(url_for('.dashboard'))
 
@@ -190,7 +196,7 @@ def dashboard(action,
             client.clear()
             client.stop()
             client.close()
-        else :
+        else:
             flash('MPD not connected')
         return redirect(url_for('.dashboard'))
     elif action == '2':
@@ -201,9 +207,10 @@ def dashboard(action,
         """ Decrease volume by 3dB """
         os.system('amixer sset PCM,0 3dB-')
         return redirect(url_for('.dashboard'))
-    else :
-        return render_template('dashboard.html', form1=form1, formsnooze=formsnooze,
-                               alarms=alarms, listedujour=listedujour, test=test)
+    else:
+        return render_template('dashboard.html', form1=form1,
+                               formsnooze=formsnooze, alarms=alarms,
+                               listedujour=listedujour, test=test)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -212,16 +219,16 @@ def edit_profile():
     form = EditProfileForm()
 
     if form.validate_on_submit():
-        current_user.name     = form.name.data
+        current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
 
-    form.name.data      = current_user.name
-    form.location.data  = current_user.location
-    form.about_me.data  = current_user.about_me
+    form.name.data = current_user.name
+    form.location.data = current_user.location
+    form.about_me.data = current_user.about_me
 
     return render_template('edit_profile.html', form=form)
 
@@ -234,13 +241,13 @@ def edit_profile_admin(id):
     form = EditProfileAdminForm(user=user)
 
     if form.validate_on_submit():
-        user.email      = form.email.data
-        user.username   = form.username.data
-        user.confirmed  = form.confirmed.data
-        user.role       = Role.query.get(form.role.data)
-        user.name       = form.name.data
-        user.location   = form.location.data
-        user.about_me   = form.about_me.data
+        user.email     = form.email.data
+        user.username  = form.username.data
+        user.confirmed = form.confirmed.data
+        user.role      = Role.query.get(form.role.data)
+        user.name      = form.name.data
+        user.location  = form.location.data
+        user.about_me  = form.about_me.data
         db.session.add(user)
         flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
@@ -262,7 +269,7 @@ def users():
     user = User.query.all()
     if request.args.get('id'):
         userid = request.args.get('id')
-        userd  = User.query.filter(User.id==userid).first()
+        userd = User.query.filter(User.id == userid).first()
         db.session.delete(userd)
         db.session.commit()
         flash('The user has been deleted.')
@@ -274,13 +281,13 @@ def users():
 @login_required
 @admin_required
 def diskutil():
-    commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
-    retour   = commande.stdout.readlines()
+    commande = subprocess.Popen("df -h", stdout=subprocess.PIPE, shell=True)
+    retour = commande.stdout.readlines()
 
     commande = subprocess.Popen("du -h ./app/static/musique",
                                 stdout=subprocess.PIPE,
-                                shell =True)
-    retour2  = commande.stdout.readlines()
+                                shell=True)
+    retour2 = commande.stdout.readlines()
 
     return render_template('/admin/diskutil.html', test=retour, test2=retour2)
 
@@ -290,20 +297,20 @@ def diskutil():
 @login_required
 @admin_required
 def admin_stuff(idline='0'):
-    form  = addAdmin()
-    f     = open(current_app.config['ADMIN_LIST']+'/'
-            +current_app.config['TODO_LIST'], 'r')
+    form = addAdmin()
+    f = open(current_app.config['ADMIN_LIST'] + '/' +
+             current_app.config['TODO_LIST'], 'r')
     data1 = f.readlines()
-    data  = [str(i)+'/'+val.decode('utf-8') for i, val in enumerate(data1)]
+    data = [str(i) + '/' + val.decode('utf-8') for i, val in enumerate(data1)]
     today = datetime.datetime.now().strftime('%d-%m-%y')
 
     if form.validate_on_submit():
-        f     = open(current_app.config['ADMIN_LIST']+'/'
-                +current_app.config['TODO_LIST'], 'a')
+        f = open(current_app.config['ADMIN_LIST'] + '/' +
+                 current_app.config['TODO_LIST'], 'a')
         """add line to the admin.txt with number and extract date """
         ajout = form.about_me.data
         """ Extract date if mentionned ('__') else add tomorow for the date"""
-        if '__' in ajout :
+        if '__' in ajout:
             """ Slice string if date in todo """
             date_todo = ajout[-8:]
             date_todo = datetime.datetime.strptime(date_todo, '%d-%m-%y').date()
@@ -311,10 +318,11 @@ def admin_stuff(idline='0'):
         else:
             """ If no date in todo add due day to tomorow """
             text_todo = ajout
-            date_todo = datetime.datetime.now()+datetime.timedelta(days=1)
+            date_todo = datetime.datetime.now() + datetime.timedelta(days=1)
             date_todo = date_todo.strftime('%d-%m-%y')
 
-        f.write(u''.join(text_todo).encode('utf-8')+'__'+str(date_todo)+'\n')
+        f.write(u''.join(text_todo).encode('utf-8') + '__' +
+                str(date_todo) + '\n')
         f.close()
         return redirect(url_for('.admin_stuff'))
 
@@ -322,8 +330,9 @@ def admin_stuff(idline='0'):
         """ Load txt in a list, add DONE --- to the idline list element
         and write new txt"""
         test = idline.split()[0]
-        data1[int(test)]='DONE --- '+data1[int(test)]
-        f = open(liste_admin+'/admin.txt', 'w')
+        data1[int(test)] = 'DONE --- '+data1[int(test)]
+        f = open(current_app.config['ADMIN_LIST'] + '/' +
+                 current_app.config['TODO_LIST'], 'w')
         for line in data1:
             f.write(line)
         f.close()
@@ -334,11 +343,12 @@ def admin_stuff(idline='0'):
         and re write the new txt """
         test = idline.split()[0]
         del data1[int(test)]
-        f    = open(current_app.config['ADMIN_LIST']+'/'
-               +current_app.config['TODO_LIST'], 'w')
+        f = open(current_app.config['ADMIN_LIST'] + '/' +
+                 current_app.config['TODO_LIST'], 'wp')
         for line in data1:
             f.write(line)
         f.close()
         return redirect(url_for('.admin_stuff'))
 
-    return render_template('admin_stuff.html', form=form, data=data, today=today)
+    return render_template('admin_stuff.html', form=form,
+                           data=data, today=today)
