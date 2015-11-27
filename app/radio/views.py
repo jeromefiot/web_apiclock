@@ -21,7 +21,7 @@ from ..functions import jouerMPD, stopMPD, connectMPD
 @login_required
 @admin_required
 def index(action, radioe):
-    """Display user's radio and form to add medias and control radios"""
+    """Display user's radio and form to add medias and control radios."""
     radio = Music.query.filter(and_(Music.music_type == '1',
                                Music.users == current_user.id)).all()
     form = AddMusicForm()
