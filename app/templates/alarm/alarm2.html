@@ -105,8 +105,11 @@
     {{ super() }}
     {{ moment.include_moment() }}
     {{ moment.lang("fr") }}
+<<<<<<< HEAD
     <script src="{{ url_for('static', filename='js/nlform.js') }}"></script>
     <script>
         var nlform = new NLForm( document.getElementById( 'nl-form' ) );
     </script>
+=======
+>>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 {% endblock %}
