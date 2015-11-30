@@ -6,11 +6,7 @@ import datetime
 from flask import render_template, redirect, url_for, flash, request,\
                   current_app
 from flask.ext.login import login_required, current_user
-<<<<<<< HEAD
 from flask.ext.mail import Message
-=======
-from flask.ext.mail import Mail, Message
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 from mpd import MPDClient
 
 from . import main
@@ -20,12 +16,8 @@ from .. import db
 from ..email import send_email
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
-<<<<<<< HEAD
 from ..functions import snooze
 from ..login_nav import LoginFormNav
-=======
-from ..functions import jouerMPD, snooze, connectMPD
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 
 # ========================================
 # ============ PAGES PUBLIQUES ===========
@@ -36,12 +28,9 @@ from ..functions import jouerMPD, snooze, connectMPD
 def contact():
     form = ContactForm()
 
-<<<<<<< HEAD
     form2 = LoginFormNav()
     form2.validateFormNav()
 
-=======
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     if request.method == 'POST':
         if form.validate() == False:
             flash('All fields are required.')
@@ -66,19 +55,12 @@ def contact():
 
 @main.route('/apiclock')
 def apiclock():
-<<<<<<< HEAD
 
-=======
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     return render_template('index.html')
 
 
 @main.route('/presentation')
 def presentation():
-<<<<<<< HEAD
-
-=======
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     return render_template('public/presentation.html')
 
 
@@ -95,33 +77,21 @@ def blog():
 
 @main.route('/thanks')
 def thanks():
-<<<<<<< HEAD
-
-=======
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     return render_template('public/thanks.html')
 
 
 @main.route('/cv')
 def cv():
-<<<<<<< HEAD
-
-=======
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     return render_template('public/cv.html')
 
 
 @main.route('/installation')
 def installation():
-<<<<<<< HEAD
 
     form2 = LoginFormNav()
     form2.validateFormNav()
 
     return render_template('public/installation.html', form2=form2)
-=======
-    return render_template('public/installation.html')
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 
 
 @main.route('/user/<username>')
@@ -136,7 +106,6 @@ def user(username):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-<<<<<<< HEAD
     """Index."""
     form2 = LoginFormNav()
     if form2.validateFormNav():
@@ -146,18 +115,6 @@ def index():
                                form1=form1, formsnooze=formsnooze)
     else:
         return render_template('index.html', form2=form2)
-=======
-    """ Connect MPD and check Play /stop"""
-    connectMPD()
-    client = MPDClient()
-    if 'play' in request.form:
-        client.add('http://audio.scdn.arkena.com/11010/franceculture-midfi128.mp3')
-        client.play()
-    elif 'stop' in request.form:
-        client.stop()
-        client.close()
-    return render_template('index.html')
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 
 # ========================================
 # ============= PAGES PRIVEES ============
@@ -178,7 +135,6 @@ def dashboard(action,
     else:
         test = False
 
-<<<<<<< HEAD
     # Get and Print MPD state
     client = MPDClient()
     client.connect("localhost", 6600)
@@ -187,11 +143,6 @@ def dashboard(action,
     alarms = Alarm.query.filter_by(users=current_user.id).all()
 
     # load todo list and search for today todo
-=======
-    alarms = Alarm.query.filter_by(users=current_user.id).all()
-
-    """ load todo list and search for today todo """
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
     f = open(current_app.config['ADMIN_LIST'] + '/' +
              current_app.config['TODO_LIST'], 'r')
     data1 = f.readlines()
@@ -199,7 +150,6 @@ def dashboard(action,
     listedujour = []
     for element in data1:
         if element[-9:-1] == today:
-<<<<<<< HEAD
             element = element.decode('utf-8')
             # cut end (= date )and remove last element (/) then compare with date
             listedujour.append(element[:-11])
@@ -208,17 +158,6 @@ def dashboard(action,
 
     form1       = playerForm(prefix="form1")
     formsnooze  = snoozeForm()
-=======
-            """ Cut end (= date )and remove last element (/)
-            then compare with date """
-            element = element.decode('utf-8')
-            listedujour.append(element[:-11])
-        else:
-            pass
-
-    form1 = playerForm(prefix="form1")
-    formsnooze = snoozeForm()
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 
     if formsnooze.submitsnooze.data:
         """ Get radio by id and return url for jouerMPD()"""
@@ -230,11 +169,7 @@ def dashboard(action,
         return redirect(url_for('.dashboard'))
 
     elif form1.submit.data:
-<<<<<<< HEAD
-        """depending on media type get id and then request for url"""
-=======
-        """ Depending on media type get id and then request for url """
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
+        """depending on media type get id and then request for url."""
 
         if form1.radio.data != 0:
             mediaid = form1.radio.data
@@ -248,17 +183,11 @@ def dashboard(action,
         print mediaid
         print form1.music.choices
 
-<<<<<<< HEAD
         choosen_media = Music.query.filter(Music.id==mediaid).first()
 
         print type(choosen_media)
 
         #jouerMPD(media_type.url)
-=======
-        choosen_media = Music.query.filter(Music.id == mediaid).first()
-
-        print type(choosen_media)
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
         return redirect(url_for('.dashboard'))
 
     # get in GET the action's param
@@ -365,21 +294,11 @@ def users():
 @login_required
 @admin_required
 def diskutil():
-<<<<<<< HEAD
     commande = subprocess.Popen("df -h",stdout=subprocess.PIPE,shell=True)
     retour   = commande.stdout.readlines()
 
     commande = subprocess.Popen("du -h ./app/static/musique",stdout=subprocess.PIPE,shell=True)
     retour2  = commande.stdout.readlines()
-=======
-    commande = subprocess.Popen("df -h", stdout=subprocess.PIPE, shell=True)
-    retour = commande.stdout.readlines()
-
-    commande = subprocess.Popen("du -h ./app/static/musique",
-                                stdout=subprocess.PIPE,
-                                shell=True)
-    retour2 = commande.stdout.readlines()
->>>>>>> 10167837ece3aa381cdee6d11a5ae1ba9cc45a01
 
     return render_template('/admin/diskutil.html', test=retour, test2=retour2)
 

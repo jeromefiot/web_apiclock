@@ -6,7 +6,8 @@
 *.geany
 /tmp
 /yowsup
-
+/app/static/musique
+/app/static/img
 run.py
 config.py
 scrap_rss_apiclock_blog.py
