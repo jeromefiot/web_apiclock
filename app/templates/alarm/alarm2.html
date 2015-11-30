@@ -15,8 +15,8 @@
 
     <script language="javascript">
         $(document).ready(function() {
-            $("#musics").hide(); 
-            
+            $("#musics").hide();
+
             $('ul li').click(function(){
                 console.log( $(this).text() )
                 if ($(this).text() == "Radio"){
@@ -32,7 +32,7 @@
                     $("#musics").hide();
                 }
             });
-            
+
         });
     </script>
 {% endblock %}
@@ -44,17 +44,17 @@
 			<div class="main clearfix">
 				<form id="nl-form" class="nl-form">
 					<br/>
-					I would like to listen to 
+					I would like to listen to
                     <select id="media" >
                         <option value="0" selected>this media type</option>
                         {% for choice in form2.media.choices %}
                             {% if choice[1] != "Podcast" %}
                                 <option value="{{choice[0]}}">{{ choice[1]|replace("Musique", "Music") }}</option>
                             {% endif %}
-                        {% endfor %}                        
+                        {% endfor %}
                     </select>
-					with this 
-                    
+					with this
+
                     <div id="radios">
                         <select >
                             <option value="0" selected>station</option>
@@ -63,7 +63,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
+
                     <div id="musics">
                         <select >
                             <option selected value="0">track</option>
@@ -72,8 +72,8 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
-					at 
+
+					at
 					<select>
 						<option selected value="0">anytime</option>
 					 	<option value="1">7 p.m.</option>
@@ -95,20 +95,18 @@
 				</form>
 			</div>
 		</div><!-- /container -->
-		<script src="{{ url_for('static', filename='js/nlform.js') }}"></script>
-		<script>
-			var nlform = new NLForm( document.getElementById( 'nl-form' ) );
-		</script>
-{% endblock %}
 
-<div id="footer">
-    {% block footer %}
+
         {% include '_footer.html' %}
-    {% endblock %}
-</div>
+
+{% endblock %}
 
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
     {{ moment.lang("fr") }}
+    <script src="{{ url_for('static', filename='js/nlform.js') }}"></script>
+    <script>
+        var nlform = new NLForm( document.getElementById( 'nl-form' ) );
+    </script>
 {% endblock %}

@@ -4,7 +4,6 @@
 *.sqlite
 *.cfg
 *.geany
-/app/static
 /tmp
 /yowsup
 
@@ -13,5 +12,3 @@ config.py
 scrap_rss_apiclock_blog.py
 admin.txt
 requirements.txt
-
-

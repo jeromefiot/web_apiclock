@@ -3,16 +3,19 @@
 
 {% block title %}Apiclock{% endblock %}
 
+
 {% block page_content %}
-<div class="page-header">
-    <h1> Coffee break, more infos... Send me a line ! </h1>
-    <hr>
-    
+
+    <div class="container">
+    <br/>
+    <p> Coffee break, more infos... Send me a line ! </p>
+    <br/>
+
     {% if success %}
         <p>Thank you for your message. We'll get back to you shortly.</p>
     {% else %}
-    
-        <div class="container">
+
+
             <div class="row">
                 <div class="col-md-8">
                     <div class="well well-sm">
@@ -78,8 +81,9 @@
                 </div>
             </div>
         </div>
-        
+
     {% endif %}
-    
-</div>
+
 {% endblock %}
+
+{% include '_footer.html' %}

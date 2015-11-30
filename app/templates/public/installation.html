@@ -4,19 +4,18 @@
 
 {% block page_content %}
 
-<div class="page-header">
-    <h1>How to set up your APICLOCK</h1>
-    
-    <div id="table-of-contents">
-        <h3><span class="icon-list"></span>Table of Contents</h3>
-    
+    <h2>How to set up your APICLOCK</h2>
+
+    <div id="table-of-contents" style="margin-top:50px;">
+        <h4><span class="icon-list"></span>Table of Contents</h4>
+
     <ul>
         <li><a href="#requirements">Requirements</a></li>
         <li><a href="#environement">Environment</a></li>
         <li><a href="#installation">Installation</a></li>
     </ul>
     </div>
-    
+
     <hr>
     <div id="requirements"></div>
     <h3>1. REQUIREMENTS</h3>
@@ -34,7 +33,7 @@
     <br/>
     <h4>Update & upgrade your Pi</h4>
     <br/>
-    
+
     First, update your system's package list by entering the following command in LXTerminal or from the command line:<br/>
    <div class="alert alert-success">
         <p>
@@ -47,7 +46,7 @@
             $ sudo apt-get upgrade
         </p>
     </div>
-    
+
     <hr>
     <div id="environement"></div>
     <h3>2. ENVIRONMENT</h3>
@@ -102,7 +101,7 @@
             $ deactivate<br/>
         </p>
     </div>
-    
+
     <hr>
     <div id="installation"></div>
     <h3>3. INSTALLATION</h3>
@@ -145,7 +144,7 @@
     </div>
      - Launch the App : <div class="alert alert-success">$ python manage.py runserver -h 0.0.0.0 -p 5000</div>
      - Open your browser on the serveur IP of your rapsberry py (port=500) = <b>http://IP_OF_YOUR_RASPEBRRY:5000</b>
-    
-    
-</div>
+
 {% endblock %}
+
+{% include '_footer.html' %}

@@ -1,0 +1,790 @@
+.profile-thumbnail {
+    position: absolute;
+}
+.profile-header {
+    min-height: 260px;
+    margin-left: 280px;
+}
+.add_media {
+    position: relative;
+	margin:-20px 0px 0px 0px;
+	width:100%;
+}
+
+/* ================== PUBLIC ================== */
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  padding-bottom: 40px;
+  color: #5a5a5a;
+  margin-bottom: 60px;
+}
+
+
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+.navbar-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+}
+
+/* Flip around the padding for proper display in narrow viewports */
+.navbar-wrapper > .container {
+  padding-right: 0;
+  padding-left: 0;
+}
+.navbar-wrapper .navbar {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.navbar-wrapper .navbar .container {
+  width: auto;
+}
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel {
+    margin-top: -20px;
+}
+
+.fill {
+    background-position: center center;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+}
+
+.lastarticle {
+    border-bottom: 1px solid #cccccc;
+    margin: -30px 0 20px;
+    padding: 0 10px 15px;
+    text-align: center;
+}
+
+/* Push last article */
+.lastarticle span {
+    color: #111111;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+}
+.lastarticle a {
+    color: #563d7c;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+/* The caption over img */
+.carousel-caption {
+    bottom: 20px;
+    color: #ffffff;
+    left: 20%;
+    padding-bottom: 30px;
+    padding-top: 20px;
+    position: absolute;
+    right: 20%;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+  height: 500px;
+  width:100%;
+  background-color: #FFFFFF;
+}
+
+/* MARKETING CONTENT
+-------------------------------------------------- */
+
+/* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+
+/* Call to action
+------------------------- */
+.callout-dark {
+	padding: 30px;
+	color: #fff;
+	background-color: #252525;
+}
+
+.callout-dark h1,
+h2,
+h3,
+h4 {
+	font-weight: 300;
+	line-height: 1.4;
+}
+
+.callout-dark p {
+	color: #B1B1B1;
+	font-size: 17px;
+}
+
+
+/* Featurettes
+------------------------- */
+
+.featurette-divider {
+  margin: 80px 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 768px) {
+  /* Navbar positioning foo */
+  .navbar-wrapper {
+    margin-top: 20px;
+  }
+  .navbar-wrapper .container {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  .navbar-wrapper .navbar {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  /* The navbar becomes detached from the top, so we round the corners */
+  .navbar-wrapper .navbar {
+    border-radius: 4px;
+  }
+
+  /* Bump up size of carousel content */
+  .carousel-caption p {
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 1.4;
+  }
+
+  .featurette-heading {
+    font-size: 50px;
+  }
+}
+
+@media (min-width: 992px) {
+  .featurette-heading {
+    margin-top: 120px;
+  }
+}
+
+/* ================== HOW TO : installation ================== */
+
+#table-of-contents {
+    margin: 0 2em 1em 0;
+    padding-bottom: 1em;
+    font-size: 1.2em;
+}
+#table-of-contents h3 {
+    margin: 1.5em 0 1em;
+    font-weight: bold;
+    font-size: 1.25em;
+    color: #606060;
+}
+#table-of-contents ul li::before {
+    background: #4B814B none repeat scroll 0 0;
+    border-radius: 50%;
+    content: "";
+    display: block;
+    font-size: 0.85em;
+    font-weight: bold;
+    height: 10px;
+    left: -4px;
+    position: absolute;
+    top: 6px;
+    width: 10px;
+    z-index: 1;
+}
+*::before, *::after {
+    box-sizing: border-box;
+}
+#table-of-contents ul li:first-child::after {
+    display: none;
+}
+#table-of-contents ul li::after {
+    border-left: 2px solid #eee9f3;
+    bottom: 18px;
+    content: "";
+    height: 27px;
+    left: 0;
+    position: absolute;
+    width: 1px;
+}
+*::before, *::after {
+    box-sizing: border-box;
+}
+#table-of-contents ul li {
+    list-style: outside none none;
+    margin: 0 0 0.7em;
+    padding: 0 0 0 17px;
+    position: relative;
+}
+#table-of-contents a {
+    color: #4B814B;
+    text-decoration: none;
+}
+
+.alert
+{
+    margin: 20px 0;
+    padding: 20px;
+    border: 0;
+    border-radius: 0;
+    border-left: 3px solid #eee;
+}
+.alert p:last-child
+{
+    margin-bottom: 0;
+}
+.alert code
+{
+    background-color: #fff;
+    border-radius: 3px;
+}
+.alert-success
+{
+    background-color: #F4FDF0;
+    border-color: #3C763D;
+}
+
+/*-------------- CV --------------*/
+
+.page-header{
+  text-align: center;
+}
+
+/*social buttons*/
+.btn-social{
+  color: white;
+  opacity:0.9;
+}
+.btn-social:hover {
+  color: white;
+    opacity:1;
+}
+.btn-facebook {
+background-color: #3b5998;
+opacity:0.9;
+}
+.btn-twitter {
+background-color: #00aced;
+opacity:0.9;
+}
+.btn-linkedin {
+background-color:#0e76a8;
+opacity:0.9;
+}
+.btn-github{
+  background-color:#000000;
+  opacity:0.9;
+}
+.btn-google {
+  background-color: #c32f10;
+  opacity: 0.9;
+}
+.btn-stackoverflow{
+  background-color: #D38B28;
+  opacity: 0.9;
+}
+
+/* resume stuff */
+
+.bs-callout {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #eee;
+    border-image: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px 1px 1px 5px;
+    margin-bottom: 5px;
+    padding: 20px;
+}
+.bs-callout:last-child {
+    margin-bottom: 0px;
+}
+.bs-callout h4 {
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+
+.bs-callout-danger h4{
+    color: #d9534f;
+}
+
+.resume .list-group-item:first-child, .resume .list-group-item:last-child{
+  border-radius:0;
+}
+
+/*makes an anchor inactive(not clickable)*/
+.inactive-link {
+   pointer-events: none;
+   cursor: default;
+}
+
+.resume-heading .social-btns{
+  margin-top:15px;
+}
+.resume-heading .social-btns i.fa{
+  margin-left:-5px;
+}
+
+
+
+@media (max-width: 992px) {
+  .resume-heading .social-btn-holder{
+    padding:5px;
+  }
+}
+
+/* skill meter in resume. copy pasted from http://bootsnipp.com/snippets/featured/progress-bar-meter */
+
+.progress-bar {
+    text-align: left;
+	white-space: nowrap;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
+}
+
+.progress-bar > .progress-type {
+	padding-left: 10px;
+}
+
+.progress-meter {
+	min-height: 15px;
+	border-bottom: 2px solid rgb(160, 160, 160);
+  margin-bottom: 15px;
+}
+
+.progress-meter > .meter {
+	position: relative;
+	float: left;
+	min-height: 15px;
+	border-width: 0px;
+	border-style: solid;
+	border-color: rgb(160, 160, 160);
+}
+
+.progress-meter > .meter-left {
+	border-left-width: 2px;
+}
+
+.progress-meter > .meter-right {
+	float: right;
+	border-right-width: 2px;
+}
+
+.progress-meter > .meter-right:last-child {
+	border-left-width: 2px;
+}
+
+.progress-meter > .meter > .meter-text {
+	position: absolute;
+	display: inline-block;
+	bottom: -20px;
+	width: 100%;
+	font-weight: 700;
+	font-size: 0.85em;
+	color: rgb(160, 160, 160);
+	text-align: left;
+}
+
+.progress-meter > .meter.meter-right > .meter-text {
+	text-align: right;
+}
+
+/* =========================================== */
+/*--------------Tasks Widget--------------*/
+
+.task-content {
+    margin-bottom: 30px;
+}
+
+.task-panel {
+	background: #fff;
+	text-align: left;
+	box-shadow: 0px 3px 2px #aab2bd;
+	margin: 5px;
+}
+
+.tasks-widget .task-content:after {
+	clear: both;
+}
+
+.tasks-widget .task-footer  {
+	margin-top: 5px;
+}
+
+.tasks-widget .task-footer:after,
+.tasks-widget .task-footer:before {
+	content: "";
+	display: table;
+	line-height: 0;
+}
+
+.tasks-widget .task-footer:after {
+	clear: both;
+}
+
+.tasks-widget  .task-list {
+  padding:0;
+  margin:0;
+  list-style: outside none none;
+}
+
+.tasks-widget .task-list > li {
+  font-weight: 200;
+  height:44px;
+  line-height:44px;
+  letter-spacing: 0.03em;
+  position:relative;
+  padding:0px 5px;
+  border-bottom:1px dashed #eaeaea;
+}
+
+.tasks-widget .task-list  li.last-line {
+  border-bottom:none;
+}
+
+.tasks-widget .task-list  li > .task-bell  {
+  margin-left:10px;
+}
+
+.tasks-widget .task-list  li > .task-checkbox {
+	float:left;
+	width:30px;
+}
+
+.tasks-widget .task-list  li > .task-title  {
+  overflow:hidden;
+  margin-right:10px;
+  margin-top: -4px;
+}
+
+.tasks-widget .task-list  li > .task-config {
+	position:absolute;
+	top:10px;
+	right:10px;
+}
+
+.badge.bg-warning {
+    background: #fcb322 none repeat scroll 0 0;
+}
+
+.tasks-widget .task-list  li .task-title .task-title-sp  {
+	margin-right:5px;
+}
+
+.tasks-widget .task-list  li.task-done .task-title-sp  {
+  text-decoration:line-through;
+  color: #bbbbbb;
+}
+
+.tasks-widget .task-list  li.task-done  {
+  background:#f6f6f6;
+}
+
+.tasks-widget .task-list  li.task-done:hover {
+  background:#f4f4f4;
+}
+
+.tasks-widget .task-list  li:hover  {
+  background:#f9f9f9;
+}
+
+.tasks-widget .task-list  li .task-config {
+  display:none;
+}
+
+.tasks-widget .task-list  li:hover > .task-config {
+  display:block;
+  margin-bottom:0 !important;
+}
+
+@media only screen and (max-width: 320px) {
+
+	.tasks-widget .task-config-btn {
+		float:inherit;
+		display:block;
+	}
+
+	.tasks-widget .task-list-projects li > .label {
+		margin-bottom:5px;
+	}
+
+}
+
+/* =========================================== */
+/* Styles for the form */
+/* =========================================== */
+
+.nl-form {
+	width: 100%;
+	margin: 0.3em auto 0 auto;
+	font-size: 4em;
+	line-height: 1.5;
+}
+.nl-form ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.nl-form input,
+.nl-form select,
+.nl-form button {
+	border: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	display: inline-block;
+	padding: 0;
+	margin: 0;
+}
+.nl-form input:focus {
+	outline: none;
+}
+.nl-field.nl-field-open {
+	z-index: 10000;
+}
+.nl-field-toggle,
+.nl-form input,
+.nl-form select  {
+	line-height: inherit;
+	display: inline-block;
+	color: #b14943;
+	cursor: pointer;
+	border-bottom: 1px dashed #b14943;
+}
+/* drop-down list / text element */
+.nl-field ul {
+	position: absolute;
+	visibility: hidden;
+	background: #76C3BD;
+	left: -0.5em;
+	top: 50%;
+	font-size: 80%;
+	opacity: 0;
+	transform: translateY(-40%) scale(0.9);
+	transition: visibility 0s 0.3s, opacity 0.3s, transform 0.3s;
+}
+.nl-field.nl-field-open ul {
+	visibility: visible;
+	opacity: 1;
+	transform: translateY(-50%) scale(1);
+	transition: visibility 0s 0s, opacity 0.3s, transform 0.3s;
+}
+.nl-field ul li {
+	color: #fff;
+	position: relative;
+}
+.nl-dd ul li {
+	padding: 0 1.5em 0 0.5em;
+	cursor: pointer;
+	white-space: nowrap;
+}
+.nl-dd ul li.nl-dd-checked {
+	color: #478982;
+}
+.no-touch .nl-dd ul li:hover {
+	background: rgba(0,0,0,0.05);
+}
+.no-touch .nl-dd ul li:hover:active {
+	color: #478982;
+}
+/* icons for some elements */
+.nl-dd ul li.nl-dd-checked:before,
+.nl-submit:before,
+.nl-field-go:before {
+	font-family: 'nlicons';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	-webkit-font-smoothing: antialiased;
+}
+.nl-dd ul li.nl-dd-checked:before {
+	content: "\e000";
+	position: absolute;
+	right: 1em;
+	font-size: 50%;
+	line-height: 3;
+}
+.nl-ti-text ul {
+	min-width: 8em;
+}
+.nl-ti-text ul li.nl-ti-input input {
+	width: 100%;
+	padding: 0.2em 2em 0.2em 0.5em;
+	border-bottom: none;
+	color: #fff;
+}
+.nl-form .nl-field-go {
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	cursor: pointer;
+	background: rgba(0,0,0,0.1);
+	width: 1.8em;
+	text-align: center;
+	color: transparent;
+}
+.nl-field-go:before {
+	content: "\e001";
+	font-size: 75%;
+	color: #fff;
+	width: 100%;
+	line-height: 2.5;
+	display: block;
+}
+/* custom placeholder color */
+input::-webkit-input-placeholder {
+	color: rgba(255,255,255,0.8);
+}
+input:active::-webkit-input-placeholder ,
+input:focus::-webkit-input-placeholder {
+	color: rgba(255,255,255,0.2);
+}
+input::-moz-placeholder {
+	color: rgba(255,255,255,0.8);
+}
+input:active::-moz-placeholder,
+input:focus::-moz-placeholder {
+	color: rgba(255,255,255,0.2);
+}
+input:-ms-input-placeholder {
+	color: rgba(255,255,255,0.8);
+}
+input:active::-ms-input-placeholder ,
+input:focus::-ms-input-placeholder {
+	color: rgba(255,255,255,0.2);
+}
+/* example field below text input */
+.nl-ti-text ul li.nl-ti-example {
+	font-size: 40%;
+	font-style: italic;
+	font-weight: 400;
+	padding: 0.4em 1em;
+	color: rgba(0,0,0,0.2);
+	border-top: 1px dashed rgba(255,255,255,0.7);
+}
+.nl-ti-text ul li.nl-ti-example em {
+	color: #fff
+}
+.nl-submit-wrap {
+	margin-top: 0.4em;
+}
+.nl-form .nl-submit {
+	line-height: 3;
+	text-transform: uppercase;
+	cursor: pointer;
+	position: relative;
+	background: #76C3BD;
+	color: #fff;
+	padding: 0 1em 0 0;
+	font-size: 40%;
+	font-weight: bold;
+	letter-spacing: 3px;
+}
+.nl-submit:before {
+	content: "\e001";
+	color: #fff;
+	float: left;
+	padding: 0 0.7em;
+	margin: 0 0.8em 0 0;
+	background: #69B1A9;
+}
+.no-touch .nl-form .nl-submit:hover,
+.no-touch .nl-form .nl-submit:active {
+	background: #69B1A9;
+}
+.no-touch .nl-form .nl-submit:hover:before {
+	background: #58a199;
+}
+.nl-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	opacity: 0;
+	z-index: 9999;
+	visibility: hidden;
+	transition: visibility 0s 0.3s, opacity 0.3s;
+}
+.nl-field.nl-field-open ~ .nl-overlay {
+	opacity: 1;
+	visibility: visible;
+	-webkit-transition-delay: 0s;
+	-moz-transition-delay: 0s;
+	transition-delay: 0s;
+}
+/* =========================================== */
+/* END - Styles for the form */
+/* =========================================== */
+/* START - FOOTER */
+/* =========================================== */
+
+/*Sets our footer background and and full-width position, if not full width remove the percent width value */
+
+.footer {
+  position: absolute;
+  padding-top: 10px;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  border-top: 1px solid #EEE;
+}
+
+/* =========================================== */
+/* END - FOOTER */
+/* =========================================== */
