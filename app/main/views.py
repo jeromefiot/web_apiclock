@@ -16,7 +16,7 @@ from .. import db
 from ..email import send_email
 from ..models import Role, User, Alarm, Music
 from ..decorators import admin_required
-from ..functions import snooze
+from ..functions import snooze, connectMPD
 from ..login_nav import LoginFormNav
 
 # ========================================
